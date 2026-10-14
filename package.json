@@ -1,3 +1,4 @@
+
 {
   "name": "clinica-nutrivida-ep2",
   "version": "1.0.0",
@@ -7,6 +8,7 @@
     "dev": "vite",
     "build": "vite build",
     "test": "vitest",
+    "test:run": "vitest run",
     "coverage": "vitest run --coverage"
   },
   "dependencies": {

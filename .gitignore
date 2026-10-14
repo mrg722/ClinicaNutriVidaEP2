@@ -1,8 +1,21 @@
+
 # VS Code
 .vscode/*.log
+
 # Sistema operativo
 .DS_Store
 Thumbs.db
+
 # Temporales
 *.tmp
 *.temp
+
+# Dependencias y compilación
+node_modules/
+dist/
+coverage/
+
+# Archivos de entorno
+.env
+.env.*
+!.env.example

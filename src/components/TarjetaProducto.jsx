@@ -14,9 +14,7 @@ export default function TarjetaProducto({ producto, onAgregar }) {
         />
       ) : null}
       <Card.Body className="p-4 d-flex flex-column">
-        <span className="badge text-bg-success align-self-start mb-2">
-          {producto.categoria}
-        </span>
+        <span className="badge text-bg-success align-self-start mb-2">{producto.categoria}</span>
         <Card.Title as="h2" className="h5">{producto.nombre}</Card.Title>
         <Card.Text>{producto.descripcion}</Card.Text>
         <p className="fw-bold fs-5">{formatearPrecio(producto.precio)}</p>
@@ -28,9 +26,9 @@ export default function TarjetaProducto({ producto, onAgregar }) {
           >
             Agregar al carrito
           </Button>
-          <Button as={Link} to={`/productos/${producto.id}`} variant="outline-success">
+          <Link className="btn btn-outline-success" to={`/productos/${producto.id}`}>
             Ver detalle
-          </Button>
+          </Link>
         </Stack>
       </Card.Body>
     </Card>

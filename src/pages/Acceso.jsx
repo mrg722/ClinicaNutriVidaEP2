@@ -1,66 +1,102 @@
 import { useState } from "react";
 import { Alert, Button, Container, Form } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import { validarCorreo } from "../utils/validaciones";
 
-const correoValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-export default function Acceso({ modo = "login" }) {
-  const esRegistro = modo === "registro";
-  const [datos, setDatos] = useState({ nombre: "", correo: "", clave: "" });
+export default function Acceso() {
+  const [datos, setDatos] = useState({ correo: "", password: "" });
   const [errores, setErrores] = useState({});
-  const [completado, setCompletado] = useState(false);
+  const [sesion, setSesion] = useState(null);
 
   function cambiar(evento) {
     const { name, value } = evento.target;
     setDatos((actuales) => ({ ...actuales, [name]: value }));
     setErrores((actuales) => ({ ...actuales, [name]: "" }));
-    setCompletado(false);
+    setSesion(null);
   }
 
   function enviar(evento) {
     evento.preventDefault();
+    const correo = datos.correo.trim().toLowerCase();
     const nuevos = {};
-    if (esRegistro && !datos.nombre.trim()) nuevos.nombre = "Ingresa tu nombre.";
-    if (!correoValido.test(datos.correo.trim())) nuevos.correo = "Ingresa un correo válido.";
-    if (datos.clave.length < 8) nuevos.clave = "La contraseña debe tener al menos 8 caracteres.";
-    setErrores(nuevos);
-    setCompletado(Object.keys(nuevos).length === 0);
+    if (!validarCorreo(correo)) nuevos.correo = "Usa @duoc.cl, @profesor.duoc.cl o @gmail.com.";
+    if (datos.password.length < 4 || datos.password.length > 10) {
+      nuevos.password = "La contraseña debe tener entre 4 y 10 caracteres.";
+    }
+
+    if (Object.keys(nuevos).length > 0) {
+      setErrores(nuevos);
+      setSesion(null);
+      return;
+    }
+
+    let rol = "Paciente";
+    if (correo === "admin@duoc.cl") {
+      rol = "Administrador";
+    } else if (correo.includes("nutricionista")) {
+      rol = "Nutricionista";
+    }
+
+    try {
+      sessionStorage.setItem("nutrivida_sesion", JSON.stringify({ correo, rol }));
+      setErrores({});
+      setSesion({ correo, rol });
+    } catch {
+      setErrores({ formulario: "El navegador no pudo guardar la sesión de demostración." });
+      setSesion(null);
+    }
   }
 
   return (
     <Container as="main" className="nv-section">
       <p className="nv-eyebrow">CUENTA DE DEMOSTRACIÓN</p>
-      <h1>{esRegistro ? "Crear cuenta" : "Iniciar sesión"}</h1>
-      <p>El formulario valida datos en el navegador; no autentica usuarios reales.</p>
-      {completado ? (
+      <h1>Iniciar sesión</h1>
+      <p>El acceso es una simulación local por perfil; no autentica contra un servidor ni protege recursos reales.</p>
+      <Alert variant="warning">
+        Usa datos ficticios. Esta demostración no guarda la contraseña y no debe usarse como acceso seguro.
+      </Alert>
+      {errores.formulario ? <Alert variant="danger" role="alert">{errores.formulario}</Alert> : null}
+      {sesion ? (
         <Alert variant="success" role="status">
-          Formulario validado. No se ha creado sesión ni guardado la contraseña porque esta versión no dispone de backend.
+          <p className="mb-1">Inicio de sesión de demostración realizado correctamente.</p>
+          <p className="mb-2">Perfil detectado: {sesion.rol}</p>
+          <Link className="btn btn-success" to={sesion.rol === "Administrador" ? "/admin" : "/"}>
+            {sesion.rol === "Administrador" ? "Ir a administración" : "Continuar al sitio"}
+          </Link>
         </Alert>
       ) : null}
-      <Form onSubmit={enviar} noValidate className="nv-form" aria-label={esRegistro ? "Formulario de registro" : "Formulario de inicio de sesión"}>
-        {esRegistro ? (
-          <Form.Group className="mb-3" controlId="acceso-nombre">
-            <Form.Label>Nombre completo</Form.Label>
-            <Form.Control name="nombre" value={datos.nombre} onChange={cambiar} isInvalid={Boolean(errores.nombre)} autoComplete="name" />
-            <Form.Control.Feedback type="invalid">{errores.nombre}</Form.Control.Feedback>
-          </Form.Group>
-        ) : null}
+      <Form onSubmit={enviar} noValidate className="nv-form" aria-label="Formulario de inicio de sesión">
         <Form.Group className="mb-3" controlId="acceso-correo">
           <Form.Label>Correo electrónico</Form.Label>
-          <Form.Control type="email" name="correo" value={datos.correo} onChange={cambiar} isInvalid={Boolean(errores.correo)} autoComplete="email" />
-          <Form.Control.Feedback type="invalid">{errores.correo}</Form.Control.Feedback>
+          <Form.Control
+            type="email"
+            autoComplete="email"
+            name="correo"
+            value={datos.correo}
+            onChange={cambiar}
+            isInvalid={Boolean(errores.correo)}
+            aria-describedby={errores.correo ? "error-acceso-correo" : undefined}
+          />
+          <Form.Control.Feedback id="error-acceso-correo" type="invalid">{errores.correo}</Form.Control.Feedback>
         </Form.Group>
-        <Form.Group className="mb-3" controlId="acceso-clave">
-          <Form.Label>Contraseña</Form.Label>
-          <Form.Control type="password" name="clave" value={datos.clave} onChange={cambiar} isInvalid={Boolean(errores.clave)} autoComplete={esRegistro ? "new-password" : "current-password"} />
-          <Form.Control.Feedback type="invalid">{errores.clave}</Form.Control.Feedback>
+        <Form.Group className="mb-3" controlId="acceso-password">
+          <Form.Label>Contraseña (4 a 10 caracteres)</Form.Label>
+          <Form.Control
+            type="password"
+            autoComplete="current-password"
+            minLength={4}
+            maxLength={10}
+            name="password"
+            value={datos.password}
+            onChange={cambiar}
+            isInvalid={Boolean(errores.password)}
+            aria-describedby={errores.password ? "error-acceso-password" : undefined}
+          />
+          <Form.Control.Feedback id="error-acceso-password" type="invalid">{errores.password}</Form.Control.Feedback>
         </Form.Group>
-        <Button type="submit" variant="success">{esRegistro ? "Validar registro" : "Validar acceso"}</Button>
+        <Button type="submit" variant="success">Iniciar sesión</Button>
       </Form>
-      <p className="mt-3">
-        {esRegistro ? "¿Ya tienes cuenta? " : "¿Todavía no tienes cuenta? "}
-        <Link to={esRegistro ? "/login" : "/registro"}>{esRegistro ? "Iniciar sesión" : "Registrarse"}</Link>
-      </p>
+      <p className="mt-3">¿Todavía no tienes cuenta? <Link to="/registro">Registrarse</Link></p>
     </Container>
   );
 }

@@ -44,7 +44,7 @@ describe("Integrante 3 · formularios y validaciones", () => {
     await user.selectOptions(screen.getByLabelText("Servicio"), "Consulta nutricional");
     await user.type(screen.getByLabelText("Fecha solicitada"), "2026-10-22");
     await user.click(screen.getByRole("button", { name: "Validar solicitud" }));
-    expect(screen.getByRole("status")).toHaveTextContent("no está conectada a una agenda real");
+    expect(screen.getByRole("status")).toHaveTextContent(/no está conectada a una agenda real/i);
   });
 
   it("preselecciona el servicio indicado en la URL", () => {
@@ -69,7 +69,7 @@ describe("Integrante 3 · formularios y validaciones", () => {
     await user.type(screen.getByLabelText("Correo electrónico"), "ana@example.com");
     await user.type(screen.getByLabelText("Mensaje"), "Necesito más información.");
     await user.click(screen.getByRole("button", { name: "Validar mensaje" }));
-    expect(screen.getByRole("status")).toHaveTextContent("no se envían mensajes a un servidor");
+    expect(screen.getByRole("status")).toHaveTextContent(/no se envían mensajes a un servidor/i);
   });
 
   it("valida el nombre obligatorio en el formulario de registro", async () => {
@@ -88,7 +88,7 @@ describe("Integrante 3 · formularios y validaciones", () => {
     await user.type(screen.getByLabelText("Correo electrónico"), "ana@example.com");
     await user.type(screen.getByLabelText("Contraseña"), "ClaveSegura123");
     await user.click(screen.getByRole("button", { name: "Validar registro" }));
-    expect(screen.getByRole("status")).toHaveTextContent("no se ha creado sesión ni guardado la contraseña");
+    expect(screen.getByRole("status")).toHaveTextContent(/no se ha creado sesión ni guardado la contraseña/i);
     expect(localStorage.getItem("clave")).toBeNull();
   });
 

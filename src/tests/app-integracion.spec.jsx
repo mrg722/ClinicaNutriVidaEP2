@@ -29,8 +29,8 @@ describe("Integración de rutas, carrito y estado global", () => {
     render(<App />);
 
     await user.click(screen.getByRole("button", { name: "Agregar Bioimpedanciometría al carrito" }));
-    await user.click(screen.getByRole("button", { name: "Agregar Bioimpedanciometría al carrito" }));
     await user.click(screen.getByRole("button", { name: "Agregar Taller de alimentación saludable al carrito" }));
+    await user.click(screen.getByRole("button", { name: "Agregar Bioimpedanciometría al carrito" }));
 
     await user.click(screen.getByRole("link", { name: /Carrito, 3 unidades/i }));
     expect(screen.getByRole("row", { name: /Bioimpedanciometría.*24\.000/ })).toBeInTheDocument();
@@ -100,7 +100,7 @@ describe("Integración de rutas, carrito y estado global", () => {
   });
 
   it("tolera datos de carrito inválidos y descarta filas malformadas", () => {
-    localStorage.setItem("carrito", "{no-json");
+    localStorage.setItem("carrito", "{}");
     window.history.pushState({}, "", "/carrito");
     const first = render(<App />);
     expect(screen.getByText("El carrito está vacío.")).toBeInTheDocument();

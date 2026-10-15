@@ -1,31 +1,72 @@
-# NutriVida · EP1
+# Clínica NutriVida · Evaluación Parcial 2
 
-Frontend de la Clínica NutriVida para DSY1104 Desarrollo FullStack II.
+Frontend académico para DSY1104 Desarrollo FullStack II. Esta versión conserva el sitio original de la EP1 y añade la aplicación React/Vite como actualización progresiva del mismo proyecto.
 
-## Versión 07/09/2026
-- Navegación lateral tipo dashboard mediante menú hamburguesa accesible.
-- HTML5 semántico y páginas interconectadas.
-- CSS externo compartido, responsive y mobile-first.
-- Validaciones JavaScript con mensajes contextuales, `aria-invalid` y `aria-describedby`.
-- Carrito con `localStorage`, cantidades y persistencia de sesión de navegación.
-- Catálogo, detalle de servicios, blogs, recursos multimedia, contacto y reserva.
-- Panel administrativo académico con productos, usuarios y formularios.
-- Formulario de registro con RUN, regiones/comunas y sugerencias de correo.
+## Ejecutar localmente
 
-## Ejecución
-Abrir `index.html` o utilizar VS Code + Live Server. En este proyecto se recomienda el puerto **5501** porque el 5500 puede estar ocupado por Oracle u otro servicio local.
+Requisitos: Node.js compatible con Vite 7 (se recomienda Node 22), npm y Git.
 
-## Estructura
-- `assets/css/estilos.css` · estilos externos compartidos.
-- `assets/js/` · lógica de menú, formularios, carrito y administración.
-- `assets/img/` · recursos gráficos.
-- `assets/media/` · video de presentación.
+```bash
+git clone https://github.com/mrg722/ClinicaNutriVidaEP2.git
+cd ClinicaNutriVidaEP2
+npm ci
+npm run dev
+```
 
-## Tecnologías
-HTML5 · CSS3 · JavaScript · Git · GitHub
+Vite mostrará la URL local. La app React parte desde `index.html` y `src/main.jsx`; no usar Live Server para comprobar el router React. Las páginas HTML originales siguen en el repositorio como referencia y conservación del trabajo EP1.
 
-## Roles demostrativos
-Administrador · Nutricionista · Paciente.
+## Comandos de validación
 
-## Integrantes
+```bash
+npm run test:run
+npm run test:integrante-1
+npm run test:integrante-2
+npm run test:integrante-3
+npm run coverage
+npm run build
+npm run preview
+```
+
+- `test:integrante-1`: catálogo, props, precios y filtros.
+- `test:integrante-2`: cantidades, totales y callbacks del carrito.
+- `test:integrante-3`: reserva, contacto, registro y administración.
+- `coverage`: genera el reporte V8 en `coverage/index.html`.
+- `build` + `preview`: comprueba la compilación de producción localmente. Preview no es un despliegue público.
+
+## Aplicación React
+
+Rutas centrales: Inicio, Servicios, Tienda, detalle `/productos/:id`, Carrito, Reserva, Contacto, Administración, Inicio de sesión, Registro y 404.
+
+Tecnologías: React 19, Vite 7, React Router, Bootstrap 5, React Bootstrap, Vitest, jsdom y React Testing Library.
+
+## Estructura principal
+
+- `src/components/`: navegación, tarjetas y pie reutilizable.
+- `src/pages/`: vistas y formularios controlados.
+- `src/data/productos.js`: datos originales de la tienda y sus precios.
+- `src/utils/`: formato de precios y persistencia local protegida ante datos inválidos.
+- `src/tests/`: diez pruebas propuestas por integrante en cada suite individual.
+- `documentacion/guias/`: adaptación punto por punto de las Guías 9–14 al proyecto.
+- `documentacion/RUBRICA_EP2_TRAZABILIDAD.md`: indicadores, evidencias, pendientes y estado.
+- `deploy/nginx-nutrivida.conf`: base de configuración Nginx para SPA.
+- `scripts/empaquetar-entrega.ps1`: empaquetado de archivos confirmados por Git.
+
+## Límites conocidos de la demostración
+
+El catálogo, carrito y altas/bajas del panel se guardan en el navegador con `localStorage`; no existe backend ni sincronización entre dispositivos. Los formularios de reserva/contacto/acceso validan entradas, pero no envían datos ni crean cuentas reales. No introducir contraseñas ni información médica sensible.
+
+El archivo Nginx prepara el fallback del router, pero la publicación real en EC2 requiere una instancia, llave y configuración de red provistas por el equipo/docente. No se declara desplegado hasta verificar una URL pública real.
+
+## Guías y entrega
+
+Empieza por [el índice de adaptación y trazabilidad](documentacion/GUIAS_9_14_Y_RUBRICA.md), revisa cada guía adaptada y contrasta la matriz de rúbrica. La pauta oficial conserva el nombre Jasmine/Karma, mientras que la Guía 13 entregada en el curso documenta la autorización de Vitest; consulta esa diferencia con el docente para la presentación individual.
+
+Para generar el ZIP en Windows, confirma primero los archivos finales en Git y ejecuta en PowerShell:
+
+```powershell
+.\scripts\empaquetar-entrega.ps1
+```
+
+## Integrantes registrados en el trabajo EP1
+
 Martin Reyes · Martin Lara · Diego Adan

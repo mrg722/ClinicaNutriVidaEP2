@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { Container } from "react-bootstrap";
 import Navegacion from "./components/Navegacion";
+import PiePagina from "./components/PiePagina";
 import { productosIniciales } from "./data/productos";
 import Inicio from "./pages/Inicio";
 import Servicios from "./pages/Servicios";
@@ -30,17 +30,6 @@ function cargarCarrito() {
       precio: Number(item.precio),
       cantidad: Math.max(1, Number(item.cantidad) || 1),
     }));
-}
-
-function PiePagina() {
-  return (
-    <footer className="nv-footer">
-      <Container className="d-flex flex-wrap justify-content-between gap-2">
-        <span>Clínica NutriVida · Tu bienestar comienza con buenos hábitos.</span>
-        <span>Proyecto académico DSY1104 · EP2</span>
-      </Container>
-    </footer>
-  );
 }
 
 function Aplicacion() {
@@ -91,6 +80,7 @@ function Aplicacion() {
 
   function eliminarProducto(id) {
     setProductos((actual) => actual.filter((producto) => producto.id !== id));
+    setCarrito((actual) => actual.filter((item) => item.id !== id));
   }
 
   const cantidadCarrito = carrito.reduce((suma, item) => suma + item.cantidad, 0);

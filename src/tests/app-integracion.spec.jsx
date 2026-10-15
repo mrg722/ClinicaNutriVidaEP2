@@ -111,7 +111,7 @@ describe("Integración de rutas, carrito y estado global", () => {
       { id: "EV003", nombre: "Fila válida", precio: 10000, cantidad: 1 },
     ]));
     render(<App />);
-    expect(screen.getByRole("heading", { name: "Encuesta de hábitos alimentarios" })).not.toBeInTheDocument();
+    expect(screen.getByRole("row", { name: /Fila válida/ })).toBeInTheDocument();
     expect(screen.getByText("Fila válida")).toBeInTheDocument();
     expect(screen.queryByText("Fila inválida")).not.toBeInTheDocument();
   });

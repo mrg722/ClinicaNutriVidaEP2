@@ -116,10 +116,10 @@ describe("Integración de rutas, carrito y estado global", () => {
     expect(screen.queryByText("Fila inválida")).not.toBeInTheDocument();
   });
 
-  it("muestra mensaje de vacío cuando la clave de productos contiene un tipo incorrecto", () => {
+  it("recupera el catálogo inicial cuando la clave de productos contiene un tipo incorrecto", () => {
     localStorage.setItem("nutrivida-productos", JSON.stringify({ datos: [] }));
     window.history.pushState({}, "", "/productos");
     render(<App />);
-    expect(screen.getByText("0 resultados")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Bioimpedanciometría" })).toBeInTheDocument();
   });
 });

@@ -1,41 +1,75 @@
-# Guía 14 adaptada a Clínica NutriVida
+# Guía 14 · Adaptación punto por punto a Clínica NutriVida
 
-**Fuente de trabajo:** Guía Práctica 14, *Cobertura, mocks y preparación evaluativa*.  
-**Objetivo:** pasar de pruebas individuales a un proceso trazable. No se persigue un porcentaje “decorativo”; primero se validan comportamientos reales y luego se usan las ramas no cubiertas como guía de mejora.
+**Fuente:** Guía Práctica 14, *Cobertura, mocks y preparación evaluativa: diez pruebas y defensa individual*. La meta es trazar cada comportamiento a una prueba y cada resultado a una evidencia.
 
-## Punto por punto
+## Matriz de los 13 puntos fuente
 
-1. **Clonar y ejecutar.** Usar este repositorio y sus scripts actuales. `npm ci` reproduce dependencias con `package-lock.json`.
-2. **Diez pruebas (secciones 4–5).** Cada integrante dispone de diez casos propios:
-   - Integrante 1: `src/tests/integrante-1.catalogo.spec.jsx`.
-   - Integrante 2: `src/tests/integrante-2.carrito.spec.jsx`.
-   - Integrante 3: `src/tests/integrante-3.formularios.spec.jsx`.
-   Se suman a `src/App.test.jsx` y las pruebas de utilidades. Los diez de cada suite deben pasar por separado.
-3. **Espías.** `src/utils/persistencia.spec.js` usa `vi.spyOn(Storage.prototype, "setItem")` para comprobar la clave y el JSON serializado. La suite base también observa la persistencia de servicios guardados.
-4. **Mocks.** Las funciones `vi.fn()` sustituyen callbacks en pruebas de componentes y permiten verificar las llamadas y los argumentos sin ejecutar pagos, reservas o APIs reales. La app no tiene un backend asíncrono declarado; no se inventa uno solo para reproducir el ejemplo `mockResolvedValue` de Conecta Cultura.
-5. **Cobertura (secciones 8–9).** Ejecutar `npm run coverage`; abrir `coverage/index.html`; analizar Statements, Branches, Functions y Lines. Registrar los valores que produzca la ejecución real, no valores esperados.
-6. **Informe.** Relacionar requisitos, archivo de prueba, expectativa, resultado y evidencia. Explicar al menos una omisión y qué prueba adicional la corrige.
-7. **ERS.** Mantener arquitectura, rutas, estado/persistencia local, funcionalidades, límites de la demo y correspondencia con los tests alineados con el código real. Se conserva el DOCX existente como archivo de entrega, pero debe regenerarse o revisarse manualmente con los nuevos contenidos antes de entregarlo.
-8. **Defensa.** Cada integrante abre su propio conjunto de diez tests, explica props/estado/Bootstrap, muestra una interacción y justifica el significado de la cobertura. No basta memorizar un guion común.
-9. **Auditoría de cierre.** Ejecutar test completo, cobertura, build, comprobar las URLs locales, revisar el ERS y el informe, y crear el ZIP desde un commit limpio mediante `scripts/empaquetar-entrega.ps1`.
-10. **Evidencias.** Guardar capturas reales de pruebas aprobadas, espía/mock, resumen HTML de cobertura y resoluciones del navegador. No se marcan como existentes si todavía no se capturaron.
+| Punto original | Adaptación a NutriVida | Evidencia |
+|---|---|---|
+| 1. Propósito | Completar tests, analizar cobertura, actualizar ERS/cobertura y preparar defensa | Guía, ERS e informe |
+| 2. Resultados | Diez pruebas por estudiante, spy/mock, cuatro métricas, hallazgos y ensayo individual | Tres suites de diez y reporte |
+| 3. Ruta de la sesión | Ejecutar, ampliar tests, generar cobertura, actualizar docs y ensayar | CI y checklist |
+| 4. Preparar repo | Usar esta rama/repo, npm ci, estado de Git y servidor de desarrollo | README/workflow |
+| 5. Plan de 10 tests | Diez casos distintos por persona, aplicados a catálogo, carrito y formularios | Tres suites individuales |
+| 6. Spy de persistencia | Observar Storage.prototype.setItem y comprobar clave/JSON exactos | persistencia.spec.js |
+| 7. Mock asíncrono | La fuente propone mockResolvedValue a un servicio async. NutriVida no tiene servicio remoto declarado; se adaptan mocks de callbacks y spy de almacenamiento sin inventar backend | vi.fn en tests y esta nota |
+| 8. Generar cobertura | Ejecutar npm run coverage y abrir coverage/index.html | Artefacto V8 de Actions |
+| 9. Interpretar informe | Distinguir Statements/Branches/Functions/Lines y revisar rutas no recorridas | CI actual marca las cuatro métricas al 100 % en su alcance |
+| 10. Documento de cobertura | Entorno, alcance, tests↔requisitos, resumen, hallazgos y mejoras | Informe_Cobertura_Testing_EP2.md |
+| 11. Actualizar ERS | Arquitectura/rutas, persistencia y límites, requisitos y tests | ERS_EP2_NutriVida.md; DOCX de entrega pendiente de revisión |
+| 12. Ensayo | Arquitectura/nav; componente/props/state; responsive; tests/mock; cobertura/hallazgo | Ensayo separado por persona |
+| 13. Auditoría final | React, Bootstrap, diez pruebas, spy/mock, cobertura, ERS, ZIP, repo y aportes individuales | Matriz de rúbrica |
 
-## Comandos de comprobación
+## Transferencia de la lista de diez pruebas fuente
 
-```bash
-npm ci
-npm run test:run
-npm run test:integrante-1
-npm run test:integrante-2
-npm run test:integrante-3
-npm run coverage
-npm run build
-```
+La fuente enumera precio cero/positivo, render de tarjeta, cupos, props, click, filtro, persistencia y elemento inexistente para Conecta Cultura. En NutriVida se mantienen los tipos de pruebas y se sustituye el dominio:
 
-Para empaquetar en Windows PowerShell, tras confirmar los cambios en Git:
+| Tipo fuente | Prueba adaptada |
+|---|---|
+| Precio cero | 0 CLP se muestra como Gratis |
+| Precio positivo | El precio CLP se formatea |
+| Render de tarjeta | La tarjeta muestra el nombre |
+| Cupos críticos | No aplica al catálogo actual de servicios; no se inventa inventario. Se prueban búsqueda/filtro sin resultados y validación del carrito |
+| Cero cupos deshabilita inscripción | No existe inscripción/cupos en la app React. Se prueban cambio de cantidad, reducción y eliminación de línea |
+| Prop categoría | La tarjeta muestra categoría recibida |
+| Evento | onAgregar recibe el producto correcto |
+| Estado/filtro | Búsqueda/categoría modifican listado |
+| Persistencia | vi.spyOn verifica localStorage; se prueban JSON inválido/fallo de almacenamiento |
+| Elemento inexistente | ID no válido muestra detalle no encontrado y opción de volver |
 
-```powershell
-.\scripts\empaquetar-entrega.ps1
-```
+Las pruebas del ejemplo cultural que no corresponden al producto NutriVida se marcan explícitamente como sustituidas; no se inventa inventario, API ni una operación de negocio.
 
-**Resultado esperado:** una matriz de trazabilidad, diez tests diferenciados por persona, mocks/espías explicados, informe de cobertura generado y build correcto. La presentación oral, capturas reales y despliegue AWS continúan dependiendo de acciones fuera de CI.
+## Mocks, cobertura y resultados observados
+
+- Spy: vi.spyOn(Storage.prototype, "setItem") registra una escritura real y se restaura.
+- Mock: vi.fn() reemplaza callbacks de componentes y verifica llamada/argumentos, sin ejecutar pagos, API ni email.
+- No se añade un servicio async simulado: el producto no tiene API asíncrona; introducirla sin necesidad de dominio cambiaría el caso sin fundamento.
+- Statements mide sentencias; Branches, caminos condicionales; Functions, funciones invocadas; Lines, líneas recorridas. Cobertura alta no garantiza calidad, pero ayuda a descubrir código no ejecutado.
+
+En [CI run 38802384128](https://github.com/mrg722/ClinicaNutriVidaEP2/actions/runs/38802384128), commit 5d9ce30e4ed3b14b2b3688d13d5f76fffbd8af62: 7/7 archivos y 64/64 casos aprobados; 100 % en las cuatro métricas V8 configuradas; build de producción exitoso. El alcance excluye tests/setup y src/main.jsx, y no mide el frontend HTML/JS antiguo de EP1.
+
+## Ensayo sugerido (12 minutos por estudiante)
+
+1. 2 min: problema, arquitectura React/Vite y rutas.
+2. 3 min: componente propio, props, estado y Bootstrap.
+3. 2 min: responsividad en varios anchos.
+4. 3 min: los diez tests de su suite y un mock/spy.
+5. 2 min: métricas reales, una decisión de cobertura y limitaciones.
+
+Cada estudiante debe abrir sus commits y justificar decisiones; memorizar un guion grupal no demuestra participación individual.
+
+## Auditoría final
+
+- [x] React/Vite estructurado y build aprobado.
+- [x] Componentes, props y estado para la app React.
+- [x] Diez pruebas separadas por integrante; 64/64 aprobadas en total.
+- [x] Mock de callbacks y spy de persistencia útiles.
+- [x] Informe con cuatro métricas al 100 % dentro del alcance configurado.
+- [ ] Capturas reales de pruebas, interacción, mock/spy, coverage y navegador.
+- [ ] Revisar/regenerar DOCX exigidos con resultados de esta versión.
+- [ ] Confirmar Vitest frente a Jasmine/Karma con el docente.
+- [ ] Generar y abrir ZIP final.
+- [ ] Defensa oral individual de los tres integrantes.
+- [ ] Despliegue EC2/Nginx si lo exige el curso.
+
+La rúbrica global no se declara 100 % completa mientras queden evidencias/manuales/documentales pendientes.

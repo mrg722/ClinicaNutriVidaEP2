@@ -194,4 +194,78 @@ describe("Aplicación NutriVida", () => {
     expect(screen.getByText(/Perfil detectado: Nutricionista/)).toBeInTheDocument();
   });
 
+  it("conserva otro producto al incrementar uno y permite eliminar y vaciar el carrito", async () => {
+    const user = userEvent.setup();
+    localStorage.setItem("nutrivida-productos", JSON.stringify([
+      { id: "A", nombre: "Servicio A", categoria: "Consulta", descripcion: "Primero", precio: 5000, imagen: null },
+      { id: "B", nombre: "Servicio B", categoria: "Consulta", descripcion: "Segundo", precio: 7000, imagen: null },
+    ]));
+    window.history.pushState({}, "", "/productos");
+    render(<App />);
+
+    const agregarA = screen.getByRole("button", { name: "Agregar Servicio A al carrito" });
+    await user.click(agregarA);
+    await user.click(screen.getByRole("button", { name: "Agregar Servicio B al carrito" }));
+    await user.click(agregarA);
+    await user.click(screen.getByRole("link", { name: /Carrito, 3 unidades/i }));
+
+    expect(screen.getByRole("row", { name: /Servicio A/ })).toHaveTextContent("2");
+    expect(screen.getByRole("row", { name: /Servicio B/ })).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "Eliminar Servicio A" }));
+    expect(screen.queryByRole("row", { name: /Servicio A/ })).not.toBeInTheDocument();
+    expect(screen.getByRole("row", { name: /Servicio B/ })).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "Vaciar carrito" }));
+    expect(screen.getByText("El carrito está vacío.")).toBeInTheDocument();
+  });
+
+  it("recupera la portada sin servicios guardados malformados", async () => {
+    const user = userEvent.setup();
+    localStorage.setItem("nutrivida-guardados", JSON.stringify({ servicio: "Consulta nutricional" }));
+    render(<App />);
+    expect(screen.getAllByRole("button", { name: "Guardar servicio" })).toHaveLength(3);
+    await user.click(screen.getAllByRole("button", { name: "Guardar servicio" })[0]);
+    expect(JSON.parse(localStorage.getItem("nutrivida-guardados"))).toEqual(["Consulta nutricional"]);
+  });
+
+  it.each([
+    ["/reserva", ""],
+    ["/reserva?servicio=CODIGO-INEXISTENTE", ""],
+  ])("deja sin seleccionar un servicio si el parámetro no existe: %s", (ruta, valorEsperado) => {
+    window.history.pushState({}, "", ruta);
+    render(<App />);
+    expect(screen.getByLabelText("Servicio")).toHaveValue(valorEsperado);
+  });
+
+  it("muestra errores si la contraseña del acceso queda fuera del rango permitido", async () => {
+    const user = userEvent.setup();
+    window.history.pushState({}, "", "/login");
+    render(<App />);
+    await user.type(screen.getByLabelText("Correo electrónico"), "admin@duoc.cl");
+    await user.type(screen.getByLabelText("Contraseña"), "esta-clave-es-demasiado-larga");
+    await user.click(screen.getByRole("button", { name: "Validar acceso" }));
+    expect(screen.getByText("La contraseña debe tener entre 4 y 10 caracteres.")).toBeInTheDocument();
+    expect(screen.queryByText(/Perfil detectado/)).not.toBeInTheDocument();
+  });
+
+  it("expone un mensaje si el navegador rechaza guardar la sesión de demostración", async () => {
+    const user = userEvent.setup();
+    const setItemOriginal = Storage.prototype.setItem;
+    const espia = vi.spyOn(Storage.prototype, "setItem").mockImplementation(function (clave, valor) {
+      if (clave === "nutrivida_sesion") {
+        throw new Error("Almacenamiento de sesión no disponible");
+      }
+      return setItemOriginal.call(this, clave, valor);
+    });
+
+    window.history.pushState({}, "", "/login");
+    render(<App />);
+    await user.type(screen.getByLabelText("Correo electrónico"), "admin@duoc.cl");
+    await user.type(screen.getByLabelText("Contraseña"), "1234");
+    await user.click(screen.getByRole("button", { name: "Validar acceso" }));
+    expect(screen.getByText("El navegador no pudo guardar la sesión de demostración.")).toBeInTheDocument();
+    espia.mockRestore();
+  });
+
 });

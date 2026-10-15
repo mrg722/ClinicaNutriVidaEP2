@@ -34,6 +34,7 @@ describe("validaciones de NutriVida", () => {
     expect(validarTelefono("+56 9 1234 5678")).toBe(true);
     expect(validarTelefono("912345678")).toBe(true);
     expect(validarTelefono("teléfono")).toBe(false);
+    expect(validarTelefono(null)).toBe(false);
   });
 
   it("crea fecha local con formato AAAA-MM-DD", () => {

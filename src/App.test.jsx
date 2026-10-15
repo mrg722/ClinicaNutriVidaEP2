@@ -243,7 +243,7 @@ describe("Aplicación NutriVida", () => {
     window.history.pushState({}, "", "/login");
     render(<App />);
     await user.type(screen.getByLabelText("Correo electrónico"), "admin@duoc.cl");
-    await user.type(screen.getByLabelText("Contraseña"), "esta-clave-es-demasiado-larga");
+    await user.type(screen.getByLabelText("Contraseña"), "12");
     await user.click(screen.getByRole("button", { name: "Validar acceso" }));
     expect(screen.getByText("La contraseña debe tener entre 4 y 10 caracteres.")).toBeInTheDocument();
     expect(screen.queryByText(/Perfil detectado/)).not.toBeInTheDocument();

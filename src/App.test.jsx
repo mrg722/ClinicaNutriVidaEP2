@@ -78,11 +78,14 @@ describe("Aplicación NutriVida", () => {
     expect(screen.getByText(/Tu bienestar comienza con buenos hábitos/)).toBeInTheDocument();
   });
 
-  it("abre el detalle de un producto usando su código original", () => {
+  it("abre el detalle y permite agregar el servicio al carrito", async () => {
+    const user = userEvent.setup();
     window.history.pushState({}, "", "/productos/EV002");
     render(<App />);
     expect(screen.getByRole("heading", { name: "Bioimpedanciometría" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Agregar al carrito" })).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Agregar al carrito" }));
+    await user.click(screen.getByRole("link", { name: /Carrito, 1 unidades/i }));
+    expect(screen.getByRole("row", { name: /Bioimpedanciometría/ })).toBeInTheDocument();
   });
   it.each([
     ["/carrito", "Tu carrito"],
@@ -212,6 +215,11 @@ describe("Aplicación NutriVida", () => {
     expect(screen.getByRole("row", { name: /Servicio A/ })).toHaveTextContent("2");
     expect(screen.getByRole("row", { name: /Servicio B/ })).toBeInTheDocument();
 
+    await user.click(screen.getByRole("button", { name: "Agregar una unidad de Servicio A" }));
+    expect(screen.getByRole("row", { name: /Servicio A/ })).toHaveTextContent("3");
+    await user.click(screen.getByRole("button", { name: "Quitar una unidad de Servicio A" }));
+    expect(screen.getByRole("row", { name: /Servicio A/ })).toHaveTextContent("2");
+
     await user.click(screen.getByRole("button", { name: "Eliminar Servicio A" }));
     expect(screen.queryByRole("row", { name: /Servicio A/ })).not.toBeInTheDocument();
     expect(screen.getByRole("row", { name: /Servicio B/ })).toBeInTheDocument();
@@ -266,6 +274,38 @@ describe("Aplicación NutriVida", () => {
     await user.click(screen.getByRole("button", { name: "Validar acceso" }));
     expect(screen.getByText("El navegador no pudo guardar la sesión de demostración.")).toBeInTheDocument();
     espia.mockRestore();
+  });
+
+  it("rechaza un correo no permitido en el acceso", async () => {
+    const user = userEvent.setup();
+    window.history.pushState({}, "", "/login");
+    render(<App />);
+    await user.type(screen.getByLabelText("Correo electrónico"), "ana@example.com");
+    await user.type(screen.getByLabelText("Contraseña"), "1234");
+    await user.click(screen.getByRole("button", { name: "Validar acceso" }));
+    expect(screen.getByText("Usa @duoc.cl, @profesor.duoc.cl o @gmail.com.")).toBeInTheDocument();
+    expect(screen.queryByText(/Perfil detectado/)).not.toBeInTheDocument();
+  });
+
+  it("rechaza una contraseña demasiado corta durante el acceso", async () => {
+    const user = userEvent.setup();
+    window.history.pushState({}, "", "/login");
+    render(<App />);
+    await user.type(screen.getByLabelText("Correo electrónico"), "admin@duoc.cl");
+    await user.type(screen.getByLabelText("Contraseña"), "12");
+    await user.click(screen.getByRole("button", { name: "Validar acceso" }));
+    expect(screen.getByText("La contraseña debe tener entre 4 y 10 caracteres.")).toBeInTheDocument();
+  });
+
+  it("rechaza una contraseña demasiado corta durante el registro", async () => {
+    const user = userEvent.setup();
+    window.history.pushState({}, "", "/registro");
+    render(<App />);
+    await user.type(screen.getByLabelText("Nombre completo"), "Ana María");
+    await user.type(screen.getByLabelText("Correo electrónico"), "ana@gmail.com");
+    await user.type(screen.getByLabelText("Contraseña"), "12");
+    await user.click(screen.getByRole("button", { name: "Validar registro" }));
+    expect(screen.getByText("La contraseña debe tener entre 4 y 10 caracteres.")).toBeInTheDocument();
   });
 
 });

@@ -11,7 +11,7 @@ export default function DetalleProducto({ productos, onAgregar }) {
       <Container as="main" className="nv-section">
         <h1>Servicio no encontrado</h1>
         <p>El servicio solicitado no existe. Vuelve al catálogo para continuar.</p>
-        <Button as={Link} to="/productos" variant="success">Volver a la tienda</Button>
+        <Link className="btn btn-success" to="/productos">Volver a la tienda</Link>
       </Container>
     );
   }
@@ -30,10 +30,8 @@ export default function DetalleProducto({ productos, onAgregar }) {
           <p>{producto.descripcion}</p>
           <p className="display-6 fw-bold">{formatearPrecio(producto.precio)}</p>
           <div className="d-flex flex-wrap gap-2">
-            <Button variant="success" onClick={() => onAgregar(producto)}>
-              Agregar al carrito
-            </Button>
-            <Button as={Link} to="/productos" variant="outline-success">Volver al catálogo</Button>
+            <Button variant="success" onClick={() => onAgregar(producto)}>Agregar al carrito</Button>
+            <Link className="btn btn-outline-success" to="/productos">Volver al catálogo</Link>
           </div>
         </Col>
       </Row>

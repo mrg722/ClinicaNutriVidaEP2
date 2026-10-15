@@ -1,31 +1,54 @@
-# Guía 12 adaptada a Clínica NutriVida
+# Guía 12 · Adaptación punto por punto a Clínica NutriVida
 
-**Fuente de trabajo:** Guía Práctica 12, *Diseño responsivo y despliegue en AWS: Bootstrap, compilación productiva y Nginx*.
+**Fuente:** Guía Práctica 12, *Diseño responsivo y despliegue en AWS: Bootstrap, compilación productiva y Nginx*.
 
-## Punto por punto
+## Matriz de las etapas originales
 
-1. **Grilla (sección 5).** `Productos.jsx` utiliza columnas `xs={12}`, `md={6}` y `lg={4}`: una tarjeta en móvil, dos desde md y tres desde lg. Se conserva React Bootstrap y la identidad visual actual.
-2. **Auditoría responsive (sección 6).** Comprobar manualmente 375 px, 768 px, 1024 px y 1440 px. En cada ancho revisar menú, tarjetas, formularios, tablas administrativas, foco visible, etiquetas, alt de imágenes y ausencia de desbordamiento horizontal. Una matriz escrita no sustituye la inspección real del navegador.
-3. **Build (sección 7).** Ejecutar:
-   ```bash
-   npm ci
-   npm run build
-   npm run preview
-   ```
-   `dist/` es el resultado compilado. El servidor de preview sirve para inspección local, no constituye un despliegue público.
-4. **Instancia EC2 y acceso SSH (secciones 8–9).** El procedimiento original requiere cuenta/entorno AWS Academy, instancia Ubuntu, par de claves .pem y reglas de red. No se deben inventar IP, DNS, fechas o credenciales. Estos pasos quedan condicionados a disponer de acceso real a AWS.
-5. **Nginx (sección 10).** Se añadió `deploy/nginx-nutrivida.conf`, ajustado al directorio `/var/www/clinica-nutrivida`.
-6. **Copia del build y permisos (sección 11).** Una vez exista instancia, copiar únicamente el contenido de `dist/`, asignar lectura a Nginx y comprobar el sitio por HTTP. No publicar el servidor de desarrollo de Vite.
-7. **Fallback SPA.** La configuración de Nginx incluye `try_files $uri $uri/ /index.html;`, necesario para que React Router procese las rutas internas al recargarlas.
-8. **Rutas y evidencia final.** Probar inicio, catálogo, detalle, carrito, reserva, contacto y 404; capturar las cuatro resoluciones reales. Anotar IP/URL y fecha solo después de un despliegue real.
+| Sección fuente | Adaptación | Archivo/acción | Estado honesto |
+|---|---|---|---|
+| 4. Preparar y ejecutar | Usar rama/repo existente; npm ci y npm run dev | README y package-lock | Instalación/build CI aprobado |
+| 5. Grilla responsiva | Tarjetas responsive con una, dos y tres columnas | Productos.jsx | Código implementado |
+| 6. Matriz de revisión | Comprobar overflow, menú, tarjetas, formulario, foco e imágenes en varios anchos | Checklist de evidencias | Capturas visuales pendientes |
+| 7. Build de producción | Build y preview, no exponer servidor de desarrollo | Scripts build/preview | Build correcto en CI |
+| 8. Crear EC2 | Instancia Ubuntu del curso, si el equipo tiene acceso | AWS Academy | Pendiente de infraestructura |
+| 9. Llave SSH | Proteger .pem, limitar SSH y conectar a instancia real | PowerShell/SSH | Pendiente; nunca subir llave a Git |
+| 10. Instalar Nginx | Instalar y comprobar con nginx -t/estado de servicio | EC2 | Pendiente de instancia |
+| 11. Copiar build/permisos | Copiar contenido de dist, permisos de lectura y recorrido | /var/www/clinica-nutrivida | Procedimiento no ejecutado |
+| 12. Configurar fallback SPA | try_files con fallback a index.html para rutas React Router | deploy/nginx-nutrivida.conf | Archivo creado, despliegue pendiente |
+| 13. Diagnóstico | Configuración Nginx, servicio activo, HTTP, assets y reload de rutas | EC2/navegador | Pendiente hasta despliegue |
+| Trabajo autónomo/evidencias | Capturas de build, navegación responsive, Nginx y ruta tras recarga | Informe/entrega | CI sí; capturas manuales no |
+| Checklist/cierre Git | Registrar build/despliegue con evidencia real | Workflow/PR | No inventar IP, URL ni fecha |
 
-## Matriz responsive
+## Grilla y revisión responsiva
 
-| Ancho | Resultado esperado | Evidencia |
+El catálogo usa columnas xs=12, md=6 y lg=4. Los estilos definen alturas razonables para imágenes, espaciado móvil y foco visible.
+
+| Ancho | Comprobación esperada | Evidencia |
 |---:|---|---|
-| 375 px | Menú colapsado, tarjetas apiladas, controles utilizables | Captura de navegador requerida |
-| 768 px | Dos columnas en catálogo, campos legibles | Captura de navegador requerida |
-| 1024 px | Tres columnas en catálogo, tabla administrativa sin overflow | Captura de navegador requerida |
-| 1440 px | Ancho máximo legible y espacios equilibrados | Captura de navegador requerida |
+| 375 px | Menú colapsado, tarjetas apiladas, inputs utilizables, sin overflow | Captura real pendiente |
+| 768 px | Dos tarjetas por fila donde corresponda, formularios legibles | Captura real pendiente |
+| 1024 px | Catálogo y tabla administrativa sin desbordamiento | Captura real pendiente |
+| 1440 px | Ancho máximo y lectura equilibrada | Captura real pendiente |
 
-**Estado:** estilos y grilla implementados; compilación automática se comprobará en CI. El despliegue EC2 real y capturas de navegador son tareas manuales pendientes hasta disponer de infraestructura y evidencia. No declarar “desplegado” solo por tener el archivo Nginx.
+## Build local y Nginx
+
+Comprobación local:
+
+    npm ci
+    npm run build
+    npm run preview
+
+Preview no es un despliegue público. El archivo deploy/nginx-nutrivida.conf sirve como configuración base: puerto 80, root /var/www/clinica-nutrivida, try_files con fallback SPA y caché para assets existentes.
+
+Cuando el equipo tenga EC2, seguir este orden: build aprobado; copiar dist; comprobar usuario/permisos; validar Nginx; habilitar sitio; reload; abrir URL pública; probar /productos/EV002 y /carrito; recargar cada ruta directamente. Credenciales, IP, fecha y URL deben proceder de la instancia real. Sin esos pasos solo se puede marcar “configuración preparada”, no “desplegado”.
+
+## Checklist
+
+- [x] Grilla Bootstrap y build configurados.
+- [x] Configuración Nginx con fallback SPA disponible.
+- [ ] Capturas a 375/768/1024/1440 px.
+- [ ] Revisar foco, etiquetas, tablas y ausencia de overflow en navegador.
+- [ ] Despliegue EC2/Nginx real, si lo exige el curso, y verificación de URL/rutas.
+- [ ] Evidencia de ruta interna tras reload.
+
+La implementación no declara desplegado el producto mientras no exista una URL real verificada.

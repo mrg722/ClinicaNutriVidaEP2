@@ -1,148 +1,128 @@
+import { useEffect, useState } from "react";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { Container } from "react-bootstrap";
+import Navegacion from "./components/Navegacion";
+import { productosIniciales } from "./data/productos";
+import Inicio from "./pages/Inicio";
+import Servicios from "./pages/Servicios";
+import Productos from "./pages/Productos";
+import DetalleProducto from "./pages/DetalleProducto";
+import Carrito from "./pages/Carrito";
+import Reserva from "./pages/Reserva";
+import Contacto from "./pages/Contacto";
+import Administracion from "./pages/Administracion";
+import Acceso from "./pages/Acceso";
+import NoEncontrada from "./pages/NoEncontrada";
+import { guardarJSON, leerJSON } from "./utils/persistencia";
 
-import { useState } from 'react';
-import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom';
-import { Container, Navbar, Nav, Row, Col, Card, Button } from 'react-bootstrap';
+function cargarProductos() {
+  const guardados = leerJSON("nutrivida-productos", null);
+  return Array.isArray(guardados) ? guardados : productosIniciales;
+}
 
-const servicios = [
-  {
-    titulo: 'Consulta nutricional',
-    descripcion: 'Atención personalizada para mejorar tus hábitos alimentarios.',
-    icono: '🥗',
-  },
-  {
-    titulo: 'Planes de alimentación',
-    descripcion: 'Planes adaptados a tus objetivos y necesidades.',
-    icono: '🍎',
-  },
-  {
-    titulo: 'Seguimiento nutricional',
-    descripcion: 'Acompañamiento para revisar tus avances.',
-    icono: '💚',
-  },
-];
+function cargarCarrito() {
+  const guardados = leerJSON("carrito", []);
+  if (!Array.isArray(guardados)) return [];
+  return guardados
+    .filter((item) => item && item.id && Number.isFinite(Number(item.precio)))
+    .map((item) => ({
+      ...item,
+      precio: Number(item.precio),
+      cantidad: Math.max(1, Number(item.cantidad) || 1),
+    }));
+}
 
-function Inicio() {
-  const [guardados, setGuardados] = useState(
-    () => JSON.parse(localStorage.getItem('nutrivida-guardados') || '[]')
+function PiePagina() {
+  return (
+    <footer className="nv-footer">
+      <Container className="d-flex flex-wrap justify-content-between gap-2">
+        <span>Clínica NutriVida · Tu bienestar comienza con buenos hábitos.</span>
+        <span>Proyecto académico DSY1104 · EP2</span>
+      </Container>
+    </footer>
   );
+}
 
-  function guardarServicio(titulo) {
-    const nuevos = guardados.includes(titulo)
-      ? guardados.filter((item) => item !== titulo)
-      : [...guardados, titulo];
+function Aplicacion() {
+  const [productos, setProductos] = useState(cargarProductos);
+  const [carrito, setCarrito] = useState(cargarCarrito);
 
-    setGuardados(nuevos);
-    localStorage.setItem('nutrivida-guardados', JSON.stringify(nuevos));
+  useEffect(() => {
+    guardarJSON("nutrivida-productos", productos);
+  }, [productos]);
+
+  useEffect(() => {
+    guardarJSON("carrito", carrito);
+  }, [carrito]);
+
+  function agregarAlCarrito(producto) {
+    setCarrito((actual) => {
+      const existente = actual.find((item) => item.id === producto.id);
+      if (existente) {
+        return actual.map((item) =>
+          item.id === producto.id ? { ...item, cantidad: item.cantidad + 1 } : item,
+        );
+      }
+      return [...actual, { ...producto, cantidad: 1 }];
+    });
   }
 
+  function cambiarCantidad(id, delta) {
+    setCarrito((actual) =>
+      actual.flatMap((item) => {
+        if (item.id !== id) return [item];
+        const cantidad = item.cantidad + delta;
+        return cantidad < 1 ? [] : [{ ...item, cantidad }];
+      }),
+    );
+  }
+
+  function eliminarDelCarrito(id) {
+    setCarrito((actual) => actual.filter((item) => item.id !== id));
+  }
+
+  function vaciarCarrito() {
+    setCarrito([]);
+  }
+
+  function crearProducto(producto) {
+    setProductos((actual) => [...actual, producto]);
+  }
+
+  function eliminarProducto(id) {
+    setProductos((actual) => actual.filter((producto) => producto.id !== id));
+  }
+
+  const cantidadCarrito = carrito.reduce((suma, item) => suma + item.cantidad, 0);
+
   return (
     <>
-      <section className="nv-hero">
-        <Container>
-          <Row className="align-items-center g-4">
-            <Col md={8}>
-              <span className="badge text-bg-success mb-3">Clínica NutriVida</span>
-              <h1 className="display-4 fw-bold">Cuida tu alimentación, mejora tu vida</h1>
-              <p className="lead mt-3">
-                Te acompañamos a construir hábitos saludables con orientación
-                nutricional personalizada.
-              </p>
-              <Button as={NavLink} to="/servicios" variant="success" size="lg">
-                Conoce nuestros servicios
-              </Button>
-            </Col>
-            <Col md={4} className="text-center">
-              <div className="display-1" aria-hidden="true">🥑</div>
-              <p className="fw-semibold">Pequeños hábitos, grandes cambios</p>
-            </Col>
-          </Row>
-        </Container>
-      </section>
-
-      <section className="nv-section">
-        <Container>
-          <h2 className="fw-bold mb-4">Nuestros servicios</h2>
-          <Row className="g-4">
-            {servicios.map((servicio) => (
-              <Col key={servicio.titulo} sm={6} lg={4}>
-                <Card className="nv-card">
-                  <Card.Body className="p-4">
-                    <div className="display-5 mb-3" aria-hidden="true">
-                      {servicio.icono}
-                    </div>
-                    <Card.Title>{servicio.titulo}</Card.Title>
-                    <Card.Text>{servicio.descripcion}</Card.Text>
-                    <Button
-                      variant={guardados.includes(servicio.titulo) ? 'success' : 'outline-success'}
-                      onClick={() => guardarServicio(servicio.titulo)}
-                    >
-                      {guardados.includes(servicio.titulo) ? 'Guardado ✓' : 'Guardar servicio'}
-                    </Button>
-                  </Card.Body>
-                </Card>
-              </Col>
-            ))}
-          </Row>
-        </Container>
-      </section>
-    </>
-  );
-}
-
-function Servicios() {
-  return (
-    <Container className="nv-section">
-      <h1>Nuestros servicios</h1>
-      <p>Conoce las opciones de atención nutricional que ofrecemos.</p>
-      <ul>
-        {servicios.map((servicio) => (
-          <li key={servicio.titulo} className="mb-3">
-            <strong>{servicio.titulo}:</strong> {servicio.descripcion}
-          </li>
-        ))}
-      </ul>
-    </Container>
-  );
-}
-
-function NoEncontrado() {
-  return (
-    <Container className="nv-section text-center">
-      <h1>Página no encontrada</h1>
-      <NavLink to="/">Volver al inicio</NavLink>
-    </Container>
-  );
-}
-
-function Layout() {
-  return (
-    <>
-      <Navbar expand="lg" className="nv-navbar" variant="dark">
-        <Container>
-          <Navbar.Brand as={NavLink} to="/" className="fw-bold">
-            🥗 NutriVida
-          </Navbar.Brand>
-          <Navbar.Toggle aria-controls="nutrivida-nav" />
-          <Navbar.Collapse id="nutrivida-nav">
-            <Nav className="ms-auto">
-              <Nav.Link as={NavLink} to="/">Inicio</Nav.Link>
-              <Nav.Link as={NavLink} to="/servicios">Servicios</Nav.Link>
-            </Nav>
-          </Navbar.Collapse>
-        </Container>
-      </Navbar>
-
+      <Navegacion cantidadCarrito={cantidadCarrito} />
       <Routes>
         <Route path="/" element={<Inicio />} />
         <Route path="/servicios" element={<Servicios />} />
-        <Route path="*" element={<NoEncontrado />} />
+        <Route path="/productos" element={<Productos productos={productos} onAgregar={agregarAlCarrito} />} />
+        <Route path="/productos/:id" element={<DetalleProducto productos={productos} onAgregar={agregarAlCarrito} />} />
+        <Route
+          path="/carrito"
+          element={
+            <Carrito
+              carrito={carrito}
+              onCambiarCantidad={cambiarCantidad}
+              onEliminar={eliminarDelCarrito}
+              onVaciar={vaciarCarrito}
+            />
+          }
+        />
+        <Route path="/reserva" element={<Reserva productos={productos} />} />
+        <Route path="/contacto" element={<Contacto />} />
+        <Route path="/admin" element={<Administracion productos={productos} onCrearProducto={crearProducto} onEliminarProducto={eliminarProducto} />} />
+        <Route path="/admin/productos" element={<Administracion productos={productos} onCrearProducto={crearProducto} onEliminarProducto={eliminarProducto} />} />
+        <Route path="/login" element={<Acceso modo="login" />} />
+        <Route path="/registro" element={<Acceso modo="registro" />} />
+        <Route path="*" element={<NoEncontrada />} />
       </Routes>
-
-      <footer className="nv-footer text-center">
-        <Container>
-          Clínica NutriVida · Tu bienestar comienza con buenos hábitos.
-        </Container>
-      </footer>
+      <PiePagina />
     </>
   );
 }
@@ -150,7 +130,7 @@ function Layout() {
 export default function App() {
   return (
     <BrowserRouter>
-      <Layout />
+      <Aplicacion />
     </BrowserRouter>
   );
 }

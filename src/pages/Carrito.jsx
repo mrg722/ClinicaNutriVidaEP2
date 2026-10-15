@@ -12,7 +12,7 @@ export default function Carrito({ carrito, onCambiarCantidad, onEliminar, onVaci
       {carrito.length === 0 ? (
         <div className="nv-empty mt-3">
           <p>El carrito está vacío.</p>
-          <Button as={Link} to="/productos" variant="success">Explorar servicios</Button>
+          <Link className="btn btn-success" to="/productos">Explorar servicios</Link>
         </div>
       ) : (
         <>
@@ -45,7 +45,7 @@ export default function Carrito({ carrito, onCambiarCantidad, onEliminar, onVaci
             <p className="h4 mb-0">Total: {formatearPrecio(total)}</p>
             <div className="d-flex gap-2 flex-wrap">
               <Button variant="outline-danger" onClick={onVaciar}>Vaciar carrito</Button>
-              <Button as={Link} to="/reserva" variant="success">Continuar a reserva</Button>
+              <Link className="btn btn-success" to="/reserva">Continuar a reserva</Link>
             </div>
           </div>
           <p className="text-secondary small mt-3">Demostración académica: el carrito es local y no procesa pagos.</p>

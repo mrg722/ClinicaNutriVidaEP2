@@ -1,0 +1,36 @@
+name: Validar frontend NutriVida
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  frontend:
+    name: Tests, cobertura y build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Obtener repositorio
+        uses: actions/checkout@v4
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Instalar dependencias reproducibles
+        run: npm ci
+      - name: Ejecutar pruebas
+        run: npm run test:run
+      - name: Generar informe de cobertura
+        run: npm run coverage
+      - name: Construir frontend de producción
+        run: npm run build
+      - name: Publicar informe de cobertura
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cobertura-nutrivida
+          path: coverage/
+          if-no-files-found: warn
+          retention-days: 14

@@ -1,0 +1,18 @@
+export const comunasPorRegion = {
+  "Arica y Parinacota": ["Arica", "Camarones", "Putre", "General Lagos"],
+  "Tarapacá": ["Iquique", "Alto Hospicio", "Pozo Almonte", "Pica"],
+  "Antofagasta": ["Antofagasta", "Calama", "Mejillones", "Tocopilla"],
+  "Atacama": ["Copiapó", "Caldera", "Vallenar", "Huasco"],
+  "Coquimbo": ["La Serena", "Coquimbo", "Ovalle", "Illapel"],
+  "Valparaíso": ["Valparaíso", "Viña del Mar", "Quilpué", "Villa Alemana", "San Antonio"],
+  "Metropolitana de Santiago": ["Santiago", "La Reina", "Providencia", "Las Condes", "Ñuñoa", "Maipú", "Puente Alto", "San Bernardo"],
+  "O'Higgins": ["Rancagua", "Machalí", "Rengo", "San Fernando"],
+  "Maule": ["Talca", "Curicó", "Linares", "Molina"],
+  "Ñuble": ["Chillán", "San Carlos", "Bulnes", "Yungay"],
+  "Biobío": ["Concepción", "Talcahuano", "Los Ángeles", "Coronel"],
+  "La Araucanía": ["Temuco", "Villarrica", "Pucón", "Angol"],
+  "Los Ríos": ["Valdivia", "La Unión", "Río Bueno", "Panguipulli"],
+  "Los Lagos": ["Puerto Montt", "Osorno", "Castro", "Ancud"],
+  "Aysén": ["Coyhaique", "Aysén", "Chile Chico", "Cochrane"],
+  "Magallanes y de la Antártica Chilena": ["Punta Arenas", "Puerto Natales", "Porvenir", "Cabo de Hornos"],
+};

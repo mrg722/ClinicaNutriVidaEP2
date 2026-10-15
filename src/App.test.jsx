@@ -1,127 +1,87 @@
-
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, cleanup } from '@testing-library/react';
-import App from './App';
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { cleanup, render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import App from "./App";
 
 beforeEach(() => {
   cleanup();
   localStorage.clear();
-  window.history.pushState({}, '', '/');
+  sessionStorage.clear();
+  window.history.pushState({}, "", "/");
 });
 
-describe('Pruebas de NutriVida', () => {
-  it('muestra el título principal', () => {
+describe("Aplicación NutriVida", () => {
+  it("muestra el título principal de la clínica", () => {
     render(<App />);
-
     expect(
-      screen.getByRole('heading', {
-        name: /cuida tu alimentación, mejora tu vida/i,
-      })
+      screen.getByRole("heading", {
+        name: "Cuida tu alimentación, mejora tu vida",
+      }),
     ).toBeInTheDocument();
   });
 
-  it('muestra los tres servicios', () => {
+  it("muestra las tres tarjetas de servicios de la portada", () => {
     render(<App />);
-
-    expect(screen.getByText('Consulta nutricional')).toBeInTheDocument();
-    expect(screen.getByText('Planes de alimentación')).toBeInTheDocument();
-    expect(screen.getByText('Seguimiento nutricional')).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Consulta nutricional" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Planes de alimentación" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Seguimiento nutricional" })).toBeInTheDocument();
   });
 
-  it('permite guardar un servicio', () => {
+  it("permite guardar y quitar un servicio", async () => {
+    const user = userEvent.setup();
     render(<App />);
-
-    fireEvent.click(
-      screen.getAllByRole('button', { name: 'Guardar servicio' })[0]
-    );
-
-    expect(
-      screen.getByRole('button', { name: 'Guardado ✓' })
-    ).toBeInTheDocument();
+    await user.click(screen.getAllByRole("button", { name: "Guardar servicio" })[0]);
+    expect(screen.getByRole("button", { name: "Guardado ✓" })).toHaveAttribute("aria-pressed", "true");
+    await user.click(screen.getByRole("button", { name: "Guardado ✓" }));
+    expect(screen.getAllByRole("button", { name: "Guardar servicio" })).toHaveLength(3);
   });
 
-  it('guarda el servicio en localStorage', () => {
-    const espia = vi.spyOn(Storage.prototype, 'setItem');
-
+  it("guarda el servicio mediante localStorage", async () => {
+    const user = userEvent.setup();
+    const espia = vi.spyOn(Storage.prototype, "setItem");
     render(<App />);
-
-    fireEvent.click(
-      screen.getAllByRole('button', { name: 'Guardar servicio' })[0]
-    );
-
+    await user.click(screen.getAllByRole("button", { name: "Guardar servicio" })[0]);
     expect(espia).toHaveBeenCalledWith(
-      'nutrivida-guardados',
-      JSON.stringify(['Consulta nutricional'])
+      "nutrivida-guardados",
+      JSON.stringify(["Consulta nutricional"]),
     );
-
-    espia.mockRestore();
   });
 
-  it('permite quitar un servicio guardado', () => {
+  it("abre la vista de servicios mediante la ruta", () => {
+    window.history.pushState({}, "", "/servicios");
     render(<App />);
-
-    fireEvent.click(
-      screen.getAllByRole('button', { name: 'Guardar servicio' })[0]
-    );
-
-    fireEvent.click(screen.getByRole('button', { name: 'Guardado ✓' }));
-
-    expect(
-      screen.getAllByRole('button', { name: 'Guardar servicio' })
-    ).toHaveLength(3);
+    expect(screen.getByText("Conoce las opciones de atención nutricional que ofrecemos.")).toBeInTheDocument();
   });
 
-  it('muestra la página de servicios', () => {
-    window.history.pushState({}, '', '/servicios');
-
+  it("abre la tienda con los datos del catálogo original", () => {
+    window.history.pushState({}, "", "/productos");
     render(<App />);
-
-    expect(
-      screen.getByText(/opciones de atención nutricional/i)
-    ).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Tienda NutriVida" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Bioimpedanciometría" })).toBeInTheDocument();
   });
 
-  it('muestra la página no encontrada para una ruta incorrecta', () => {
-    window.history.pushState({}, '', '/ruta-inexistente');
-
+  it("muestra una página 404 para una ruta desconocida", () => {
+    window.history.pushState({}, "", "/ruta-inexistente");
     render(<App />);
-
-    expect(
-      screen.getByRole('heading', { name: 'Página no encontrada' })
-    ).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Página no encontrada" })).toBeInTheDocument();
   });
 
-  it('muestra los enlaces de navegación', () => {
+  it("muestra enlaces de navegación internos", () => {
     render(<App />);
-
-    expect(
-      screen.getByRole('link', { name: /inicio/i })
-    ).toHaveAttribute('href', '/');
-
-    expect(
-      screen.getByRole('link', { name: 'Servicios' })
-    ).toHaveAttribute('href', '/servicios');
+    expect(screen.getByRole("link", { name: "Inicio" })).toHaveAttribute("href", "/");
+    expect(screen.getByRole("link", { name: "Servicios" })).toHaveAttribute("href", "/servicios");
+    expect(screen.getByRole("link", { name: "Tienda" })).toHaveAttribute("href", "/productos");
   });
 
-  it('muestra el pie de página', () => {
+  it("muestra el pie de página de NutriVida", () => {
     render(<App />);
-
-    expect(
-      screen.getByText(/tu bienestar comienza con buenos hábitos/i)
-    ).toBeInTheDocument();
+    expect(screen.getByText(/Tu bienestar comienza con buenos hábitos/)).toBeInTheDocument();
   });
 
-  it('navega a servicios desde el botón principal', () => {
+  it("abre el detalle de un producto usando su código original", () => {
+    window.history.pushState({}, "", "/productos/EV002");
     render(<App />);
-
-    fireEvent.click(
-      screen.getByRole('button', {
-        name: /conoce nuestros servicios/i,
-      })
-    );
-
-    expect(
-      screen.getByText(/opciones de atención nutricional/i)
-    ).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Bioimpedanciometría" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Agregar al carrito" })).toBeInTheDocument();
   });
 });

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Alert, Button, Container, Form, Table } from "react-bootstrap";
 import { formatearPrecio } from "../utils/precio";
 
-const inicial = { nombre: "", categoria: "Evaluación", descripcion: "", precio: "" };
+const inicial = { nombre: "", categoria: "", descripcion: "", precio: "" };
 
 export default function Administracion({ productos, onCrearProducto, onEliminarProducto }) {
   const [datos, setDatos] = useState(inicial);
@@ -59,6 +59,7 @@ export default function Administracion({ productos, onCrearProducto, onEliminarP
           <Form.Group className="mb-3" controlId="admin-categoria">
             <Form.Label>Categoría</Form.Label>
             <Form.Select name="categoria" value={datos.categoria} onChange={cambiar} isInvalid={Boolean(errores.categoria)}>
+              <option value="">Selecciona una categoría</option>
               <option value="Evaluación">Evaluación</option>
               <option value="Taller">Taller</option>
               <option value="Consulta">Consulta</option>

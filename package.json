@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "preview": "vite preview",
     "test": "vitest",
     "test:run": "vitest run",
     "test:integrante-1": "vitest run src/tests/integrante-1.catalogo.spec.jsx",

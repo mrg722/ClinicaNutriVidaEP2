@@ -16,10 +16,10 @@
 
 | Indicador oficial | Peso | Evidencia exigida para aspirar al 100 % | Implementación en NutriVida | Estado |
 |---|---:|---|---|---|
-| **IE2.1.1** Diseña un proyecto frontend utilizando un framework de JavaScript. | 10 % | Proyecto estructurado, funcional y construido con framework frontend. | Entrada React/Vite, rutas, catálogo, detalle, carrito, formularios y vistas de NutriVida. | El código está preparado; verificar CI y navegador tras el commit final. |
-| **IE2.1.2** Desarrolla componentes React, gestionando propiedades y estados e implementando diseño responsivo mediante Bootstrap. | 10 % | Props/estado correctamente gestionados y responsividad integrada. | Componentes reutilizables, estado de carrito/catálogo, filtros, React Bootstrap, breakpoints y foco visible. | Falta inspección/captura manual de la interfaz en los tamaños definidos por la guía. |
-| **IE2.2.1** Crea pruebas unitarias para componentes frontend y verifica sus comportamientos. | 12 % | Todas las pruebas están bien estructuradas, verifican lógica y comportamientos y no fallan. El PDF nombra Jasmine/Karma. | Diez pruebas para cada uno de los tres integrantes, más pruebas comunes/utilidades; Vitest/jsdom/RTL según la Guía 13 proporcionada. | Verificar resultado del workflow final y consultar la discrepancia Jasmine/Karma vs. Vitest con el docente. |
-| **IE2.3.1** Implementa un proceso de testing con entorno, mocks, resultados y cobertura. | 8 % | Entorno bien configurado, mocks efectivos, análisis detallado y cobertura exhaustiva. | Configuración de Vitest, spy de localStorage, callbacks con `vi.fn`, cobertura V8, HTML/lcov y workflow. | Verificar el informe generado y completar la interpretación con métricas de la ejecución final. |
+| **IE2.1.1** Diseña un proyecto frontend utilizando un framework de JavaScript. | 10 % | Proyecto estructurado, funcional y construido con framework frontend. | Entrada React/Vite, rutas, catálogo, detalle, carrito, formularios y vistas de NutriVida. | La ejecución de CI confirmó pruebas y compilación de producción. La revisión funcional/visual manual continúa pendiente. |
+| **IE2.1.2** Desarrolla componentes React, gestionando propiedades y estados e implementando diseño responsivo mediante Bootstrap. | 10 % | Props/estado correctamente gestionados y responsividad integrada. | Componentes reutilizables, estado de carrito/catálogo, filtros, React Bootstrap, breakpoints y foco visible. | Componentes y estilos están implementados; falta inspección/captura manual del navegador en los tamaños de la guía. |
+| **IE2.2.1** Crea pruebas unitarias para componentes frontend y verifica sus comportamientos. | 12 % | Todas las pruebas están bien estructuradas, verifican lógica y comportamientos y no fallan. El PDF nombra Jasmine/Karma. | Diez pruebas para cada uno de los tres integrantes, más pruebas comunes/utilidades; Vitest/jsdom/RTL según la Guía 13 proporcionada. | 81/81 pruebas aprobadas en 7 archivos, incluidas diez por integrante. La pauta impresa nombra Jasmine/Karma; falta confirmar con el docente la sustitución autorizada por la Guía 13. |
+| **IE2.3.1** Implementa un proceso de testing con entorno, mocks, resultados y cobertura. | 8 % | Entorno bien configurado, mocks efectivos, análisis detallado y cobertura exhaustiva. | Configuración de Vitest, spy de localStorage, callbacks con `vi.fn`, cobertura V8, HTML/lcov y workflow. | 100 % Statements, Branches, Functions y Lines medido por V8; informe Markdown actualizado con la ejecución y el SHA. |
 
 **Total situación evaluativa 1: 40 %.**
 
@@ -38,10 +38,10 @@ Los tres integrantes registrados en la versión de EP1 son Martin Reyes, Martin 
 
 ## Comprobaciones obligatorias antes de marcar la entrega como final
 
-- [ ] GitHub Actions finaliza correctamente en el commit que se entregará: pruebas, cobertura y compilación.
-- [ ] Cada suite individual pasa y tiene diez casos distintos, no diez repeticiones del mismo comportamiento.
-- [ ] Se registra el resumen real de Statements, Branches, Functions y Lines.
-- [ ] El informe se interpreta y vincula pruebas con requisitos/hallazgos.
+- [x] GitHub Actions terminó correctamente para el commit de código `7e94488fc84861e83d7f84f3573a6d3a572a75f9`: pruebas, cobertura y compilación.
+- [x] La ejecución completa aprobó los tres archivos de prueba individuales (diez casos por integrante) y casos adicionales de integración/utilidades.
+- [x] El resumen real de Statements, Branches, Functions y Lines quedó registrado en el informe Markdown.
+- [x] El informe documenta alcance, métricas, suites y relación con requisitos; queda pendiente la revisión manual del navegador.
 - [ ] El docente confirma que se acepta Vitest en reemplazo de Jasmine/Karma, de acuerdo con la Guía 13 suministrada.
 - [ ] Se prueban manualmente rutas directas/recarga, carrito persistente, formularios y 404.
 - [ ] Se guardan capturas responsive a 375, 768 y 1200 px (las referencias de la Guía 12).
@@ -50,4 +50,4 @@ Los tres integrantes registrados en la versión de EP1 son Martin Reyes, Martin 
 - [ ] Cada integrante practica su propia presentación y puede explicar código, pruebas, mocks y cobertura.
 - [ ] Si la actividad exige EC2/Nginx: despliegue real, URL pública y ruta interna tras recarga comprobadas.
 
-**Conclusión honesta:** tener código y pruebas es necesario, pero no acredita por sí solo el 100 % de toda la rúbrica. Los indicadores de presentación, la inspección visual, la confirmación de herramienta y el despliegue exigido (si corresponde) dependen de evidencias reales que no deben inventarse.
+**Conclusión honesta:** la verificación automática de código, pruebas, cobertura y build está completa en el alcance medido. No se puede declarar cumplido el 100 % de toda la rúbrica mientras falten la revisión visual/capturas, la confirmación docente sobre Vitest frente a la pauta impresa, la preparación de los DOCX/ZIP requeridos y la defensa individual. El despliegue EC2 solo queda pendiente si el docente lo exige; no se inventan evidencias externas.

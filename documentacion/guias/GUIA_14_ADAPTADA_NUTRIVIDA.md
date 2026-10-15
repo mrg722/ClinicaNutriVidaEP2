@@ -47,3 +47,14 @@ git archive --format=zip --output=NutriVida-EP2.zip HEAD
 - El informe de cobertura registra métricas producidas por una ejecución identificada.
 - ERS, código y matriz de requisitos describen la misma versión.
 - Cada integrante practica la defensa de su contribución; una batería compartida no demuestra por sí sola la defensa individual.
+
+
+## Resultado automatizado medido
+
+La ejecución [GitHub Actions #38815259946](https://github.com/mrg722/ClinicaNutriVidaEP2/actions/runs/38815259946), sobre el commit de código `7e94488fc84861e83d7f84f3573a6d3a572a75f9`, terminó con:
+- 81/81 pruebas aprobadas.
+- 7/7 archivos de pruebas aprobados.
+- Statements 100 %, Branches 100 %, Functions 100 % y Lines 100 % según V8, dentro del alcance configurado.
+- Build de producción exitoso.
+
+Las capturas del navegador, la inspección del artefacto HTML, la actualización de DOCX/ZIP y la defensa oral permanecen como tareas externas, listadas en `documentacion/EVIDENCIAS_PENDIENTES_EP2.md`.

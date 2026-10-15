@@ -33,6 +33,16 @@ npm run preview
 - `coverage`: crea el reporte en `coverage/index.html`.
 - `build` y `preview`: permiten revisar localmente el resultado de producción. Preview no es un despliegue público.
 
+## Verificación automatizada más reciente
+
+La [ejecución de GitHub Actions #38815259946](https://github.com/mrg722/ClinicaNutriVidaEP2/actions/runs/38815259946), sobre el commit de código `7e94488fc84861e83d7f84f3573a6d3a572a75f9`, terminó correctamente:
+- 7/7 archivos de prueba aprobados.
+- 81/81 casos aprobados.
+- Cobertura V8: Statements 100 %, Branches 100 %, Functions 100 % y Lines 100 % en el alcance configurado.
+- Build de producción exitoso.
+
+La cobertura corresponde al código incluido en la configuración V8; no sustituye la revisión visual/manual ni la presentación individual.
+
 ## Funcionalidades React
 
 - Inicio y servicios de NutriVida.
@@ -67,7 +77,7 @@ Empieza por [el índice de Guías 9–14 y rúbrica](documentacion/GUIAS_9_14_Y_
 
 La Guía 13 del curso declara que fue autorizado reemplazar Jasmine/Karma por Vitest; el PDF de la rúbrica aún nombra Jasmine/Karma. Conviene confirmar esa equivalencia con el docente antes de la presentación.
 
-Los documentos Markdown quedan como referencia del código. Para la entrega requerida, revisa los DOCX existentes y actualízalos con los resultados del commit final. Para generar el ZIP desde un commit confirmado en Git:
+Los documentos Markdown quedan como referencia actualizada del código y contienen la última medición de CI. Los DOCX requeridos por la pauta existen en el repositorio, pero todavía deben regenerarse/revisarse con estos resultados antes de entregar. Para generar el ZIP desde un commit confirmado en Git:
 
 ```powershell
 git archive --format=zip --output=NutriVida-EP2.zip HEAD

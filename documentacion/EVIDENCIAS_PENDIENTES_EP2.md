@@ -1,12 +1,12 @@
 # Evidencias pendientes de EP2 · NutriVida
 
-Esta lista distingue lo que puede comprobarse automáticamente de aquello que requiere equipo local, navegador, infraestructura o defensa oral.
+Esta lista distingue lo que puede comprobarse automáticamente de aquello que requiere equipo local, navegador, infraestructura o defensa oral. La verificación automática quedó registrada en [la ejecución #38815259946](https://github.com/mrg722/ClinicaNutriVidaEP2/actions/runs/38815259946).
 
 ## Verificación automatizada
 
-- [ ] Confirmar workflow verde en el commit de entrega: instalación, pruebas, cobertura y build.
-- [ ] Copiar los cuatro porcentajes reales de V8 al informe de cobertura.
-- [ ] Abrir el artefacto de cobertura y revisar las líneas/ramas no cubiertas.
+- [x] GitHub Actions finalizó correctamente para el commit de código `7e94488fc84861e83d7f84f3573a6d3a572a75f9`: instalación, pruebas, cobertura y build.
+- [x] Registrar en el informe los resultados reales de V8: Statements 100 %, Branches 100 %, Functions 100 %, Lines 100 %.
+- [ ] Descargar el artefacto `cobertura-nutrivida` de Actions y comprobar el informe HTML; la consola de CI ya confirmó 100 % de métricas dentro del alcance configurado.
 
 ## Revisión manual del navegador
 

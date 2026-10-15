@@ -34,3 +34,14 @@ Este índice conecta las Guías Prácticas 9–14 con el código de **Clínica N
 4. El carrito/panel son demostraciones locales: no se afirma que existan backend, pagos, agenda, correo o autenticación real.
 5. La Guía 13 proporcionada autoriza Vitest en lugar de Jasmine/Karma, pero el PDF de la rúbrica aún nombra Jasmine/Karma. Se registra la discrepancia para confirmarla con el docente.
 6. La configuración Nginx no acredita un despliegue real. AWS, capturas del navegador y defensa requieren evidencias fuera del repositorio.
+
+
+## Verificación automatizada final
+
+- Commit de código verificado: `7e94488fc84861e83d7f84f3573a6d3a572a75f9`.
+- [GitHub Actions #38815259946](https://github.com/mrg722/ClinicaNutriVidaEP2/actions/runs/38815259946): terminó correctamente.
+- Pruebas: 81/81 aprobadas en 7 archivos.
+- Cobertura V8: Statements 100 %, Branches 100 %, Functions 100 %, Lines 100 % dentro del alcance configurado.
+- Compilación de producción: correcta.
+
+Esto no sustituye las capturas responsive, la revisión manual en el navegador, los documentos DOCX de entrega ni la defensa individual. Esos puntos siguen identificados en la lista de evidencias pendientes.

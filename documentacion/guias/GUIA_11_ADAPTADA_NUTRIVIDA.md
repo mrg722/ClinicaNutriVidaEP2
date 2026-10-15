@@ -1,28 +1,43 @@
-# Guía 11 adaptada a Clínica NutriVida
+# Guía 11 · Adaptación punto por punto a Clínica NutriVida
 
-**Fuente de trabajo:** Guía Práctica 11, *Navegación y formularios en React: React Router, parámetros y vistas administrativas*.  
-**Decisión clave:** los códigos del catálogo de NutriVida son identificadores de texto (por ejemplo EV002), no números secuenciales. Por eso `useParams()` conserva el texto del parámetro y busca una coincidencia exacta, en vez de convertirlo con `Number(id)`.
+**Fuente:** Guía Práctica 11, *Navegación y formularios en React: React Router, parámetros y vistas administrativas*.
 
-## Punto por punto
+## Matriz de secciones
 
-1. **Router instalado y envuelto.** `App.jsx` declara `BrowserRouter` y el componente principal de rutas. No se agrega un segundo router dentro de `main.jsx`.
-2. **Vistas de la guía.** Las vistas se adaptan a `Inicio.jsx`, `Servicios.jsx`, `Productos.jsx`, `DetalleProducto.jsx`, `Carrito.jsx`, `Reserva.jsx`, `Contacto.jsx`, `Administracion.jsx` y `NoEncontrada.jsx`.
-3. **Mapa de rutas.** `/`, `/servicios`, `/productos`, `/productos/:id`, `/carrito`, `/reserva`, `/contacto`, `/admin`, `/admin/productos`, `/login` y `/registro`; la ruta `*` muestra una página 404.
-4. **Navegación interna.** `Navegacion.jsx` usa `NavLink` y componentes Link para mantener navegación SPA; los enlaces activos se identifican visualmente.
-5. **Detalle con parámetro.** `DetalleProducto.jsx` busca `productos.find(item => item.id === id)`. El caso inexistente muestra “Servicio no encontrado” y un enlace al catálogo.
-6. **Formulario controlado de reserva.** `Reserva.jsx` guarda nombre, correo, servicio y fecha en estado; evita envío HTML tradicional, comprueba nombre/correo/servicio/fecha y muestra errores junto a los campos.
-7. **Formulario de contacto.** `Contacto.jsx` valida nombre, correo y longitud mínima del mensaje. El mensaje final aclara que no se envía a un servidor.
-8. **Administración.** `Administracion.jsx` valida nombre, categoría y precio antes de llamar a `onCrearProducto`; el padre actualiza catálogo mediante estado. El borrado también usa un callback explícito.
-9. **Acceso y registro.** `Acceso.jsx` valida los campos del demo y no almacena claves ni afirma que se creó una cuenta o sesión.
-10. **Trabajo autónomo y pruebas.** Los casos se distribuyen entre los archivos de pruebas de los tres integrantes. La navegación directa, rutas desconocidas, errores y formularios válidos deben comprobarse en Vitest y manualmente.
+| Punto original | Adaptación al caso | Archivo | Criterio comprobable |
+|---|---|---|---|
+| 4. Preparar/ejecutar repo | Reutilizar repo/lockfile; comprobar estado y servidor de desarrollo | README, package.json | npm ci y npm run dev |
+| 5. Configurar router | react-router-dom ya está declarado; BrowserRouter se monta una sola vez | src/App.jsx | No se anidan routers |
+| 6. Crear páginas | Vistas de NutriVida reemplazan páginas culturales | src/pages/*.jsx | Todos los imports existen |
+| 7. Declarar rutas | Inicio, servicios, productos, detalle, carrito, reserva, contacto, admin, login, registro y 404 | src/App.jsx | Cada ruta muestra su componente |
+| 8. Navegación SPA | Link/NavLink para rutas internas y ruta activa visible | Navegacion.jsx y páginas | No recarga documento al usar enlaces |
+| 9. Parámetros dinámicos | ID se compara como texto, incluyendo prefijos EV/TG | DetalleProducto.jsx | EV002 abre; ID desconocido muestra alternativa |
+| 10. Formulario controlado | Reserva con nombre, correo, servicio y fecha; value/onChange y mensajes | Reserva.jsx | Campos inválidos y caso válido |
+| 10. Formulario adicional | Contacto con nombre, correo y mensaje mínimo | Contacto.jsx | Errores y estado de validación |
+| 11. Administración | Crear/eliminar producto demo con validación | Administracion.jsx | Callbacks y almacenamiento local |
+| Estructura de vistas | Acceso/registro demostrativos y 404 recuperable | Acceso.jsx, NoEncontrada.jsx | No se simula cuenta real |
+| Trabajo autónomo/evidencias | Tests propios más integración y checklist manual | src/tests | CI y navegador |
+| Cierre Git | Verificar rutas, resultados y commits | PR/Actions | No integrar si CI falla |
+
+## Mapa de rutas
+
+| Ruta | Función |
+|---|---|
+| / | Portada con guardado local de servicios |
+| /servicios | Descripción de servicios principales |
+| /productos | Catálogo con búsqueda y filtro |
+| /productos/:id | Detalle por código de producto como texto |
+| /carrito | Cantidades, eliminación, subtotal y total |
+| /reserva | Validación frontend, no agenda real |
+| /contacto | Validación frontend, no envío de email |
+| /admin y /admin/productos | Administración local del catálogo |
+| /login y /registro | Formularios demo, sin autenticación |
+| * | 404 con retorno a inicio |
+
+## Validación y límites
+
+La guía original demuestra alta de actividad y detalle numérico; NutriVida usa formularios de reserva/contacto y administración. Los campos están controlados por estado, se valida submit y los errores se muestran junto al campo. No se afirma reserva confirmada, mensaje enviado o cuenta creada, porque no existe backend. Las contraseñas no se guardan.
 
 ## Criterios de aceptación
 
-- `BrowserRouter` envuelve la aplicación una sola vez.
-- Todas las rutas internas usan `Link`/`NavLink`.
-- Un ID de catálogo válido abre su detalle; uno inválido presenta una alternativa utilizable.
-- Los campos controlados utilizan `value` y `onChange`.
-- Los formularios muestran mensajes específicos para entradas inválidas y no aseguran operaciones de backend inexistentes.
-- El panel se declara demostrativo; no representa un sistema real de autenticación/autorización.
-
-**Verificación manual pendiente:** escribir rutas directamente y recargar el navegador en la compilación de producción y en un servidor configurado con fallback SPA.
+BrowserRouter único; enlaces internos correctos; detalle válido e inexistente; formularios controlados con errores específicos; administración actualizada mediante estado/callback; ruta desconocida con retorno. La recarga directa en build preview y las evidencias visuales deben comprobarse en navegador antes de la entrega.

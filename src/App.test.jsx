@@ -84,4 +84,114 @@ describe("Aplicación NutriVida", () => {
     expect(screen.getByRole("heading", { name: "Bioimpedanciometría" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Agregar al carrito" })).toBeInTheDocument();
   });
+  it.each([
+    ["/carrito", "Tu carrito"],
+    ["/reserva", "Agendar una cita"],
+    ["/contacto", "Contacto"],
+    ["/admin", "Administración de productos"],
+    ["/login", "Iniciar sesión"],
+    ["/registro", "Crear cuenta"],
+  ])("renderiza la ruta %s", (ruta, encabezado) => {
+    window.history.pushState({}, "", ruta);
+    render(<App />);
+    expect(screen.getByRole("heading", { name: encabezado })).toBeInTheDocument();
+  });
+
+  it("usa el catálogo original si la persistencia de productos no contiene una lista", () => {
+    localStorage.setItem("nutrivida-productos", JSON.stringify({ datos: [] }));
+    window.history.pushState({}, "", "/productos");
+    render(<App />);
+    expect(screen.getByRole("heading", { name: "Bioimpedanciometría" })).toBeInTheDocument();
+  });
+
+  it("muestra el carrito vacío ante datos persistidos que no son una lista", () => {
+    localStorage.setItem("carrito", JSON.stringify({ producto: "inválido" }));
+    window.history.pushState({}, "", "/carrito");
+    render(<App />);
+    expect(screen.getByText("El carrito está vacío.")).toBeInTheDocument();
+  });
+
+  it("descarta filas malformadas y normaliza cantidades al recuperar el carrito", () => {
+    localStorage.setItem("carrito", JSON.stringify([
+      null,
+      { id: "MAL", nombre: "Fila inválida", precio: "sin precio", cantidad: 3 },
+      { id: "OK", nombre: "Fila válida", precio: 10000, cantidad: 0 },
+    ]));
+    window.history.pushState({}, "", "/carrito");
+    render(<App />);
+    expect(screen.getByRole("row", { name: /Fila válida/ })).toBeInTheDocument();
+    expect(screen.getByRole("row", { name: /Fila válida/ })).toHaveTextContent("1");
+    expect(screen.queryByText("Fila inválida")).not.toBeInTheDocument();
+  });
+
+  it("muestra una alternativa para un código de producto inexistente", () => {
+    window.history.pushState({}, "", "/productos/NO-EXISTE");
+    render(<App />);
+    expect(screen.getByRole("heading", { name: "Servicio no encontrado" })).toBeInTheDocument();
+  });
+
+  it("permite abrir el detalle de un servicio que no tiene imagen", () => {
+    localStorage.setItem("nutrivida-productos", JSON.stringify([
+      { id: "CUSTOM-1", nombre: "Servicio sin fotografía", categoria: "Consulta", descripcion: "Servicio de prueba.", precio: 5000, imagen: null },
+    ]));
+    window.history.pushState({}, "", "/productos/CUSTOM-1");
+    render(<App />);
+    expect(screen.getByRole("heading", { name: "Servicio sin fotografía" })).toBeInTheDocument();
+    expect(screen.queryByRole("img", { name: "Imagen de Servicio sin fotografía" })).not.toBeInTheDocument();
+  });
+
+  it("integra el alta y la eliminación local desde administración", async () => {
+    const user = userEvent.setup();
+    window.history.pushState({}, "", "/admin");
+    render(<App />);
+    await user.type(screen.getByLabelText("Nombre"), "Servicio de prueba integrado");
+    await user.selectOptions(screen.getByLabelText("Categoría"), "Taller");
+    await user.type(screen.getByLabelText("Precio en pesos chilenos"), "17000");
+    await user.click(screen.getByRole("button", { name: "Guardar producto" }));
+    expect(screen.getByRole("row", { name: /Servicio de prueba integrado/ })).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "Eliminar Servicio de prueba integrado" }));
+    expect(screen.queryByRole("row", { name: /Servicio de prueba integrado/ })).not.toBeInTheDocument();
+    expect(JSON.parse(localStorage.getItem("nutrivida-productos")).some(
+      (producto) => producto.nombre === "Servicio de prueba integrado",
+    )).toBe(false);
+  });
+
+  it("incrementa el mismo producto y lo quita cuando la cantidad vuelve a cero", async () => {
+    const user = userEvent.setup();
+    window.history.pushState({}, "", "/productos");
+    render(<App />);
+    const agregar = screen.getByRole("button", { name: "Agregar Bioimpedanciometría al carrito" });
+    await user.click(agregar);
+    await user.click(agregar);
+    await user.click(screen.getByRole("link", { name: /Carrito, 2 unidades/i }));
+    expect(screen.getByText(/Total:.*24\.000/)).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "Quitar una unidad de Bioimpedanciometría" }));
+    await user.click(screen.getByRole("button", { name: "Quitar una unidad de Bioimpedanciometría" }));
+    expect(screen.getByText("El carrito está vacío.")).toBeInTheDocument();
+  });
+
+  it("reconoce el perfil administrativo del acceso de demostración", async () => {
+    const user = userEvent.setup();
+    window.history.pushState({}, "", "/login");
+    render(<App />);
+    await user.type(screen.getByLabelText("Correo electrónico"), "admin@duoc.cl");
+    await user.type(screen.getByLabelText("Contraseña"), "1234");
+    await user.click(screen.getByRole("button", { name: "Validar acceso" }));
+    expect(screen.getByText(/Perfil detectado: Administrador/)).toBeInTheDocument();
+    await user.click(screen.getByRole("link", { name: "Ir a administración" }));
+    expect(screen.getByRole("heading", { name: "Administración de productos" })).toBeInTheDocument();
+  });
+
+  it("reconoce el perfil nutricionista en el acceso de demostración", async () => {
+    const user = userEvent.setup();
+    window.history.pushState({}, "", "/login");
+    render(<App />);
+    await user.type(screen.getByLabelText("Correo electrónico"), "nutricionista@duoc.cl");
+    await user.type(screen.getByLabelText("Contraseña"), "1234");
+    await user.click(screen.getByRole("button", { name: "Validar acceso" }));
+    expect(screen.getByText(/Perfil detectado: Nutricionista/)).toBeInTheDocument();
+  });
+
 });

@@ -162,14 +162,15 @@ describe("Integración de rutas, carrito y estado global", () => {
     await user.type(screen.getByLabelText("Correo electrónico"), "ana@example.com");
     await user.type(screen.getByLabelText("Contraseña"), "ClaveSegura123");
     await user.click(screen.getByRole("button", { name: "Validar acceso" }));
-    expect(screen.getByRole("status")).toHaveTextContent(/no autentica usuarios reales/i);
+    expect(screen.getByText(/no autentica usuarios reales/i)).toBeInTheDocument();
+    expect(screen.getByRole("status")).toHaveTextContent(/no se ha creado sesión ni guardado la contraseña/i);
   });
 
   it("usa una lista vacía cuando los servicios guardados no tienen formato de arreglo", async () => {
     const user = userEvent.setup();
     localStorage.setItem("nutrivida-guardados", JSON.stringify({ servicio: "Consulta nutricional" }));
     render(<App />);
-    expect(screen.getByRole("button", { name: "Guardar servicio" })).toBeInTheDocument();
+    expect(screen.getAllByRole("button", { name: "Guardar servicio" })).toHaveLength(3);
     await user.click(screen.getAllByRole("button", { name: "Guardar servicio" })[0]);
     expect(screen.getByRole("button", { name: "Guardado ✓" })).toBeInTheDocument();
     expect(JSON.parse(localStorage.getItem("nutrivida-guardados"))).toEqual(["Consulta nutricional"]);

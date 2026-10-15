@@ -12,6 +12,7 @@ import Reserva from "./pages/Reserva";
 import Contacto from "./pages/Contacto";
 import Administracion from "./pages/Administracion";
 import Acceso from "./pages/Acceso";
+import Registro from "./pages/Registro";
 import NoEncontrada from "./pages/NoEncontrada";
 import { guardarJSON, leerJSON } from "./utils/persistencia";
 
@@ -108,8 +109,8 @@ function Aplicacion() {
         <Route path="/contacto" element={<Contacto />} />
         <Route path="/admin" element={<Administracion productos={productos} onCrearProducto={crearProducto} onEliminarProducto={eliminarProducto} />} />
         <Route path="/admin/productos" element={<Administracion productos={productos} onCrearProducto={crearProducto} onEliminarProducto={eliminarProducto} />} />
-        <Route path="/login" element={<Acceso modo="login" />} />
-        <Route path="/registro" element={<Acceso modo="registro" />} />
+        <Route path="/login" element={<Acceso />} />
+        <Route path="/registro" element={<Registro />} />
         <Route path="*" element={<NoEncontrada />} />
       </Routes>
       <PiePagina />

@@ -1,28 +1,55 @@
-# Guía 10 adaptada a Clínica NutriVida
+# Guía 10 · Adaptación punto por punto a Clínica NutriVida
 
-**Fuente de trabajo:** Guía Práctica 10, *Datos, props y estado en React: Cartelera interactiva y persistencia simulada*.  
-**Regla de adaptación:** las estructuras culturales de ejemplo se reemplazan por los servicios y precios ya presentes en `assets/js/detalle-producto.js`. No se inventan códigos ni precios.
+**Fuente:** Guía Práctica 10, *Datos, props y estado en React: Cartelera interactiva y persistencia simulada*.
 
-## Punto por punto
+**Objetivo:** separar datos y presentación, usar props/estado, procesar eventos y persistir estado. La guía de origen modela actividades con cupos/inscripciones; NutriVida modela servicios y talleres con códigos/precios del sitio original. Se adapta el patrón, no se inventan cupos.
 
-1. **Datos como objetos (sección 5).** `src/data/productos.js` centraliza los seis ítems originales: EV002, EV003, EV004, TG001, TG002 y TG003; conserva nombres, descripciones y precios de la versión JS existente, e importa las imágenes que ya están en `assets/img/`.
-2. **Props (sección 6).** `TarjetaProducto` recibe `producto` y `onAgregar`. El hijo muestra el objeto recibido y notifica al padre al agregarlo; no modifica directamente la prop.
-3. **Listas dinámicas (sección 7).** `Productos.jsx` transforma `productos` con `map` y usa `producto.id` como `key`. No se copian manualmente seis tarjetas de JSX.
-4. **Estado (sección 8).** La búsqueda y la categoría seleccionada viven en `useState` dentro de `Productos.jsx`. El resultado visible se deriva del catálogo, sin alterar el arreglo original.
-5. **Estado de carrito (sección 9).** `App.jsx` mantiene el carrito compartido para catálogo, detalle y página `/carrito`. Las operaciones agregan, incrementan, disminuyen, eliminan y vacían mediante actualizaciones inmutables.
-6. **Persistencia (sección 10).** `leerJSON` y `guardarJSON` encapsulan `localStorage` en `src/utils/persistencia.js`; `useEffect` sincroniza `carrito` y la administración del catálogo. Los datos inválidos o un error de almacenamiento utilizan un fallback en lugar de romper la pantalla.
-7. **CRUD de demostración (sección 11).** `Administracion.jsx` agrega y elimina productos desde el estado del catálogo. Es persistencia local del navegador, no un backend compartido entre usuarios.
-8. **Trabajo autónomo.** El requisito “ocho actividades y cuatro categorías” pertenece a Conecta Cultura y no se copia literalmente. En NutriVida el criterio adaptado es usar todos los servicios identificados en la fuente original, permitir filtrar las categorías existentes y mostrar el estado vacío cuando no hay coincidencias.
-9. **Evidencias y Git.** Las pruebas del catálogo y del carrito se separan en carpetas por integrante; los casos automatizados comprueban props, filtro, total, callbacks, límites y estados vacíos.
+## Matriz por sección
 
-## Claves de persistencia
+| Punto original | Transferencia al proyecto | Archivo/evidencia | Criterio |
+|---|---|---|---|
+| 1–3. Propósito, resultados, ruta y vocabulario | Comprender objeto, arreglo, prop, estado, evento, inmutabilidad y localStorage con el catálogo real | Este documento, ERS y README | Explicación con ejemplos NutriVida |
+| 4. Preparar repo | Usar rama/repo existentes; ejecutar npm ci, git status y npm run dev | package.json y README | Entorno reproducible |
+| 5. Fuente de datos | Centralizar los seis servicios originales y sus imágenes | src/data/productos.js | Códigos, nombres y precios coinciden con assets/js/detalle-producto.js |
+| 6. Props | La tarjeta recibe objeto producto y callback de agregar | src/components/TarjetaProducto.jsx | Presenta datos recibidos y no muta la prop |
+| 7. Render del arreglo | Crear una tarjeta por objeto con map y key estable basada en id | src/pages/Productos.jsx | Todas las tarjetas nacen del arreglo |
+| 8. Estado con useState | Búsqueda y filtro modifican qué elementos se ven sin mutar lista base | Productos.jsx | Pruebas de búsqueda/filtro/no-results |
+| 9. Estado compartido de inscripciones | Se adapta a carrito: agregar, incrementar, reducir, borrar línea y vaciar | src/App.jsx y src/pages/Carrito.jsx | Total/filas reflejan el estado global |
+| 10. Persistencia con useEffect | Guardar/restaurar carrito y catálogo de demostración en localStorage | src/utils/persistencia.js y App.jsx | Tests de persistencia; reload real queda como comprobación manual |
+| 11. CRUD simulado | Alta y eliminación de servicios desde administración local | src/pages/Administracion.jsx | Validación, callback y actualización del catálogo |
+| Trabajo autónomo/evidencias | Ejecutar casos del dominio NutriVida | Tres suites individuales y suite de integración | CI pasa con 64 casos |
+| Checklist/cierre Git | Relacionar comportamiento, prueba y commit; no subir node_modules | .gitignore, workflow, PR | CI verde antes de merge |
 
-| Clave | Propósito | Límite |
+## Datos de origen del catálogo
+
+| Código | Servicio | Precio CLP original | Categoría |
+|---|---|---:|---|
+| EV002 | Bioimpedanciometría | 12.000 | Evaluación |
+| EV003 | Encuesta de hábitos alimentarios | 10.000 | Evaluación |
+| EV004 | Análisis de exámenes | 15.000 | Evaluación |
+| TG001 | Taller de alimentación saludable | 15.000 | Taller |
+| TG002 | Taller de cocina nutritiva | 20.000 | Taller |
+| TG003 | Taller de nutrición para deportistas | 18.000 | Taller |
+
+No se inventaron identificadores ni precios para el catálogo inicial. El panel puede agregar servicios locales de demostración, con ID nuevo, pero no representa un backend.
+
+## Persistencia y límites
+
+| Clave | Uso | Límite |
 |---|---|---|
-| `carrito` | Productos seleccionados y cantidades | Solo existe en ese navegador |
-| `nutrivida-productos` | Cambios académicos de catálogo | No es una base de datos compartida |
-| `nutrivida-guardados` | Servicios guardados desde la portada | Preferencia local, no cuenta del usuario |
+| carrito | Productos y cantidades | Solo el navegador actual |
+| nutrivida-productos | Catálogo demo modificado | No se sincroniza entre usuarios |
+| nutrivida-guardados | Servicios guardados desde Inicio | No es una cuenta de usuario |
 
-No almacenar contraseñas en `localStorage`; los formularios de acceso de esta entrega solo validan datos y muestran explícitamente que no hay autenticación real.
+leerJSON maneja clave ausente, JSON roto y tipo incorrecto con alternativa. guardarJSON devuelve false ante fallo de almacenamiento. No se almacenan contraseñas ni se persisten datos sensibles de reserva.
 
-**Criterios de aceptación:** el catálogo se produce desde datos; el filtro y la búsqueda responden a acciones; cada tarjeta recibe props; las operaciones de carrito actualizan cantidades y total; la persistencia se recupera con recarga y maneja datos malformados; la administración crea y elimina elementos localmente.
+## Adaptaciones frente a la actividad cultural
+
+- Los ejemplos de ocho actividades y cuatro categorías pertenecen a Conecta Cultura; aquí se usa el catálogo que existe.
+- Los casos de cupos críticos y botón de inscripción deshabilitado no se copian como si NutriVida tuviera cupos en el catálogo React. Se prueban condiciones reales del producto: precio inválido, búsqueda/filtro vacíos, ID inexistente, cantidades y total del carrito.
+- Estado se actualiza inmutablemente; props son de solo lectura.
+- La persistencia es local y se etiqueta como demostración, no como base compartida.
+
+## Criterios de aceptación
+
+Catálogo desde datos; tarjeta parametrizada; búsqueda/filtro reactivos; operaciones de carrito inmutables; subtotal/total correcto; persistencia tolerante a valores inválidos; altas/bajas administrativas validadas; pruebas en CI y reload manual pendiente.

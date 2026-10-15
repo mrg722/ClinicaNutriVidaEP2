@@ -69,9 +69,10 @@ describe("Integrante 2 · carrito y persistencia", () => {
     expect(onVaciar).toHaveBeenCalledOnce();
   });
 
-  it("muestra subtotal de una línea", () => {
+  it("muestra subtotal y total de la línea", () => {
     renderCarrito();
-    expect(screen.getByText(/20\.000/)).toBeInTheDocument();
+    expect(screen.getByRole("row", { name: /Bioimpedanciometría.*20\.000/ })).toBeInTheDocument();
+    expect(screen.getByText(/Total:.*20\.000/)).toBeInTheDocument();
   });
 
   it("ofrece continuar al formulario de reserva", () => {
